@@ -100,7 +100,9 @@ local function sendWebhook()
     
     local currentStats = getStats()
     if not currentStats.honey then 
-        warn("[❌] Cannot send webhook: Honey stat not found")
+        if Config.debugmode then
+            warn("[❌] Cannot send webhook: Honey stat not found")
+        end
         return 
     end
 
@@ -155,14 +157,33 @@ local function sendWebhook()
         }}
     }
 
+    -- Alternative Webhook-Sending method using request
     local success, err = pcall(function()
-        http:PostAsync(WebhookConfig.url, http:JSONEncode(data))
+        request({
+            Url = WebhookConfig.url,
+            Method = "POST",
+            Headers = {
+                ["Content-Type"] = "application/json"
+            },
+            Body = game:GetService("HttpService"):JSONEncode(data)
+        })
     end)
 
     if success and Config.debugmode then
         print("[✅] Webhook sent successfully!")
     elseif not success then
         warn("[❌] Failed to send webhook: " .. tostring(err))
+        -- Try alternative method if first one fails
+        pcall(function()
+            syn.request({
+                Url = WebhookConfig.url,
+                Method = "POST",
+                Headers = {
+                    ["Content-Type"] = "application/json"
+                },
+                Body = game:GetService("HttpService"):JSONEncode(data)
+            })
+        end)
     end
 end
 

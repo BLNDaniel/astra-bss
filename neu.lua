@@ -134,22 +134,49 @@ local function calculateHoneyPerHour(sessionHoney, startTime)
     return timeElapsed > 0 and (sessionHoney / timeElapsed) or 0
 end
 
+function SendMessage(url, embed)
+    local http = game:GetService("HttpService")
+    local headers = {
+        ["Content-Type"] = "application/json"
+    }
+    local data = {
+        ["embeds"] = {
+            {
+                ["title"] = embed.title,
+                ["description"] = embed.description,
+                ["color"] = embed.color,
+                ["fields"] = embed.fields,
+                ["footer"] = {
+                    ["text"] = embed.footer.text
+                }
+            }
+        }
+    }
+    local body = http:JSONEncode(data)
+    local response = request({
+        Url = url,
+        Method = "POST",
+        Headers = headers,
+        Body = body
+    })
+end
+
 local function sendWebhook()
     if not Config.enabled then return end
     
     local currentStats = getStats()
-    if not currentStats.honey then 
+    if not currentStats.honey then
         if Config.debugmode then
             warn("[❌] Cannot send webhook: Stats not found")
         end
-        return 
+        return
     end
 
     local currentHoney = currentStats.honey.Value
     local sessionHoney = currentHoney - startHoney
     local honeyPerHour = calculateHoneyPerHour(sessionHoney, clientStartTime)
     local uptime = formatTime(workspace.DistributedGameTime)
-    
+
     local fields = {
         {
             ["name"] = "🍯 Current Honey",
@@ -181,31 +208,19 @@ local function sendWebhook()
         })
     end
 
-    local data = {
-        ["embeds"] = {{
-            ["title"] = "🐝 BSS Status Update",
-            ["description"] = "Current statistics for " .. player.Name,
-            ["color"] = 16776960,
-            ["fields"] = fields,
-            ["footer"] = {
-                ["text"] = "AstraBSS | " .. os.date("%Y-%m-%d %H:%M:%S")
-            },
-            ["timestamp"] = os.date("!%Y-%m-%dT%H:%M:%SZ")
-        }}
+    local embed = {
+        ["title"] = "🐝 BSS Status Update",
+        ["description"] = "Current statistics for " .. player.Name,
+        ["color"] = 16776960,
+        ["fields"] = fields,
+        ["footer"] = {
+            ["text"] = "AstraBSS | " .. os.date("%Y-%m-%d %H:%M:%S")
+        },
+        ["timestamp"] = os.date("!%Y-%m-%dT%H:%M:%SZ")
     }
 
-    local success, err = pcall(function()
-        local jsonData = game:GetService("HttpService"):JSONEncode(data)
-        game:GetService("HttpService"):PostAsync(Config.url, jsonData, Enum.HttpContentType.ApplicationJson)
-    end)
-    
-    if success and Config.debugmode then
-        print("[✅] Webhook sent successfully!")
-    elseif not success then
-        warn("[❌] Failed to send webhook: " .. tostring(err))
-    end
+    SendMessage(Config.url, embed)
 end
-
 
 -- UI Setup
 astrabsslib.rank = "Premium"

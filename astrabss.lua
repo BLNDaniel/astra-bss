@@ -38,9 +38,11 @@ player.CharacterAdded:Connect(function(newCharacter)
     end
 end)
 
+-- Functions END
+
 local Notif = astrabsslib:InitNotifications()
 
-for i = 20,0,-1 do 
+for i = 10,0,-1 do 
     task.wait(0.05)
     local LoadingXSX = Notif:Notify("Loading Astra V1, please be patient.", 3, "information")
 end 
@@ -53,28 +55,28 @@ local Init = astrabsslib:Init()
 
 
 -- HOME TAB
-local Home = Init:NewTab("Home")
-local Information = Home:NewSection("Information")
-local Label1 = Home:NewLabel("v0.0.1: NEW UI Loader", "left")
+local HomeTab = Init:NewTab("Home")
+local Information = HomeTab:NewSection("Information")
+local Label1 = HomeTab:NewLabel("v0.0.1: NEW UI Loader", "left")
 
-local stopall = Home:NewToggle("Stop Everything", false, function(value)
+local stopall = HomeTab:NewToggle("Stop Everything", false, function(value)
     local vers = value and "on" or "off"
     print("two " .. vers)
 end)
 
 -- Misc TAB
-local Misc = Init:NewTab("Misc")
-local MiscSection = Misc:NewSection("Misc")
+local MiscTab = Init:NewTab("Misc")
+local MiscSection = MiscTab:NewSection("Misc")
 
-local ToggleNoclip = Misc:NewToggle("Noclip", false, function(value)
+local ToggleNoclip = MiscTab:NewToggle("Noclip", false, function(value)
     SetCollisionGroup(value)
     print(value and "✅ Noclip aktiviert" or "❌ Noclip deaktiviert")
 end):AddKeybind(Enum.KeyCode.N)
 
-local WalkspeedSlide = Misc:NewSlider("Walkspeed", "", true, "/", {min = 1, max = 100, default = 60}, function(value)
+local WalkspeedSlide = MiscTab:NewSlider("Walkspeed", "", true, "/", {min = 1, max = 100, default = 60}, function(value)
     print(value)
 end)
-local TweenSpeedSlide = Misc:NewSlider("TweenSpeed", "", true, "/", {min = 1, max = 10, default = 6}, function(value)
+local TweenSpeedSlide = MiscTab:NewSlider("TweenSpeed", "", true, "/", {min = 1, max = 10, default = 6}, function(value)
     print(value)
 end)
 
@@ -92,7 +94,10 @@ end)
 
 -- Hive
 
--- Configuration
+-- Config
+
+local ConfigTab = Init:NewTab("Config")
+local ConfigSection = ConfigTab:NewSection("Configuration")
 
 -- UI 
 

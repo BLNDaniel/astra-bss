@@ -1,3 +1,4 @@
+-- Made by DannyGG with <3
 local astrabsslib = loadstring(game:HttpGet("https://raw.githubusercontent.com/BLNDaniel/astra-bss/refs/heads/main/Astra%20Lib%20Src.lua"))()
 local useRemotes = false
 local autoCollecting = false 

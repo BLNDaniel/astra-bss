@@ -38,6 +38,43 @@ local capacityStat = player:FindFirstChild("Capacity")
 local startHoney = honeyStat and honeyStat.Value or 0
 local clientStartTime = tick()
 
+-- 🕵️ Scannt nach möglichen Inventardaten und anderen Variablen des Spielers
+local player = game.Players.LocalPlayer
+local scanInterval = 2  -- Intervall in Sekunden, wie oft gescannt wird
+
+local function scanForData()
+    -- Durchsucht alle Kinder des Players nach relevanten Daten
+    for _, v in pairs(player:GetChildren()) do
+        if v:IsA("Folder") or v:IsA("Model") then
+            -- Wenn das Objekt ein Folder oder Model ist, durchsuchen wir weiter
+            for _, data in pairs(v:GetChildren()) do
+                if data:IsA("IntValue") or data:IsA("NumberValue") then
+                    -- Wenn das Objekt ein IntValue oder NumberValue ist, könnten es relevante Daten sein
+                    print("[📦] Found: " .. data.Name .. " = " .. data.Value)
+                end
+            end
+        end
+    end
+    
+    -- Hier kannst du auch durch die Workspace-Objekte oder andere Bereiche scannen
+    for _, obj in pairs(game:GetService("Workspace"):GetChildren()) do
+        if obj:IsA("Model") or obj:IsA("Part") then
+            -- Wenn es ein Model oder Part ist, schau nach relevanten Werten
+            for _, child in pairs(obj:GetChildren()) do
+                if child:IsA("IntValue") or child:IsA("NumberValue") then
+                    print("[🔍] Found in Workspace: " .. child.Name .. " = " .. child.Value)
+                end
+            end
+        end
+    end
+end
+
+-- Durchsucht alle 2 Sekunden
+while wait(scanInterval) do
+    scanForData()
+end
+
+
 -- Webhook Functions
 local function formatNumber(number)
     if not number then return "0" end

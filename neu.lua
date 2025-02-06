@@ -12,7 +12,7 @@ local Config = {
 }
 
 local WebhookConfig = {
-    url = "https://discord.com/api/webhooks/1329436163093692467/mtVp0o82K2i5OuMhHBbD2ZrnFHgxT4uI70cMh-dIBs8AlTyADzopX2ustcZCO6ulqAyM",
+    url = "",
     enabled = false,
     interval = 1,
     settings = {
@@ -248,7 +248,7 @@ local function autoCollect()
             wait(0.1)
             VirtualInputManager:SendMouseButtonEvent(0, 0, 0, false, game, 0)
         end
-        wait(1.2) 
+        wait(1) 
     end
 end
 
@@ -289,8 +289,8 @@ local ToggleWebhook = WebhookTab:NewToggle("Enable Webhook", false, function(val
     end
 end)
 
-local WebhookLink = WebhookTab:NewTextbox("Webhook URL", "", "1", "all", "small", true, false, function(val)
-    print(val)
+local WebhookLink = WebhookTab:NewTextbox("Webhook URL", "", "Webhook URL", "all", "small", true, false, function(val)
+    WebhookConfig.url = val
 end)
 
 local WebhookSlide = WebhookTab:NewSlider("Webhook Interval", "", true, "/", {min = 1, max = 60, default = 20}, function(value)
@@ -372,6 +372,10 @@ local Toggledebug = ConfigTab:NewToggle("Debug Logs", false, function(value)
     if Config.debugmode then
         print(value and "✅ Debug Logs activated" or "❌ Debug Logs deactivated")
     end
+end)
+
+local SaveConfig = ConfigTab:NewButton("Save Config", function()
+    -- Save Config
 end)
 
 -- UI Tab

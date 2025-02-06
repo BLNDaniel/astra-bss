@@ -1,8 +1,4 @@
 local astrabsslib = loadstring(game:HttpGet("https://raw.githubusercontent.com/Consistt/Ui/main/UnLeaked"))()
-local PhysicsService = game:GetService("PhysicsService")
-local Players = game:GetService("Players")
-local player = Players.LocalPlayer
-local character = player.Character or player.CharacterAdded:Wait()
 
 astrabsslib.rank = "Premium"
 local Wm = astrabsslib:Watermark("AstraBSS | v" .. astrabsslib.version ..  " | " .. astrabsslib:GetUsername() .. " | rank: " .. astrabsslib.rank)
@@ -13,10 +9,29 @@ coroutine.wrap(function()
     end
 end)()
 
+
+local Notif = astrabsslib:InitNotifications()
+
+for i = 10,0,-1 do 
+    task.wait(0.05)
+    local LoadingXSX = Notif:Notify("Loading Astra V1, please be patient.", 3, "information")
+end 
+
+astrabsslib.title = "AstraBSS"
+
+astrabsslib:Introduction()
+wait(1)
+local Init = astrabsslib:Init()
+
 -- Functions
 
+local PhysicsService = game:GetService("PhysicsService")
+local Players = game:GetService("Players")
+local player = Players.LocalPlayer
+local character = player.Character or player.CharacterAdded:Wait()
+
 -- Collision Group
-local groupName = "NoclipGroup"
+local groupName = "Astralreise"
 if not pcall(function() PhysicsService:CreateCollisionGroup(groupName) end) then
     print("Collision Group existiert bereits.")
 end
@@ -39,20 +54,6 @@ player.CharacterAdded:Connect(function(newCharacter)
 end)
 
 -- Functions END
-
-local Notif = astrabsslib:InitNotifications()
-
-for i = 10,0,-1 do 
-    task.wait(0.05)
-    local LoadingXSX = Notif:Notify("Loading Astra V1, please be patient.", 3, "information")
-end 
-
-astrabsslib.title = "AstraBSS"
-
-astrabsslib:Introduction()
-wait(1)
-local Init = astrabsslib:Init()
-
 
 -- HOME TAB
 local HomeTab = Init:NewTab("Home")

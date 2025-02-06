@@ -13,6 +13,30 @@ coroutine.wrap(function()
     end
 end)()
 
+-- Functions
+
+-- Collision Group
+local groupName = "NoclipGroup"
+if not pcall(function() PhysicsService:CreateCollisionGroup(groupName) end) then
+    print("Collision Group existiert bereits.")
+end
+PhysicsService:CollisionGroupSetCollidable(groupName, groupName, false)
+
+local function SetCollisionGroup(state)
+    for _, part in pairs(character:GetChildren()) do
+        if part:IsA("BasePart") then
+            part.CollisionGroup = state and groupName or "Default"
+        end
+    end
+end
+
+player.CharacterAdded:Connect(function(newCharacter)
+    character = newCharacter
+    task.wait(1) 
+    if ToggleNoclip:GetState() then
+        SetCollisionGroup(true)
+    end
+end)
 
 local Notif = astrabsslib:InitNotifications()
 
@@ -80,34 +104,6 @@ local Keybind1 = UITab:NewKeybind("UI Key", Enum.KeyCode.RightAlt, function(key)
 end)
 
 local FinishedLoading = Notif:Notify("Loaded AstraBSS", 4, "success")
-
--- Functions
-
--- Collision Group
-local groupName = "NoclipGroup"
-if not pcall(function() PhysicsService:CreateCollisionGroup(groupName) end) then
-    print("Collision Group existiert bereits.")
-end
-PhysicsService:CollisionGroupSetCollidable(groupName, groupName, false)
-
-local function SetCollisionGroup(state)
-    for _, part in pairs(character:GetChildren()) do
-        if part:IsA("BasePart") then
-            part.CollisionGroup = state and groupName or "Default"
-        end
-    end
-end
-
-player.CharacterAdded:Connect(function(newCharacter)
-    character = newCharacter
-    task.wait(1) 
-    if ToggleNoclip:GetState() then
-        SetCollisionGroup(true)
-    end
-end)
-
-
-
 
 -- // FUNCTION DOCS: 
 --[[

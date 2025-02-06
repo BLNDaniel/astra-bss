@@ -8,6 +8,7 @@ local Config = {
     stopAll = false,
     walkspeedEnabled = false,
     defaultWalkspeed = 60,
+    defaultTweenSpeed = 6,
     debugmode = false,
     autofarming = false,
     anonymousmode = false,
@@ -413,10 +414,9 @@ local WalkspeedSlide = ConfigTab:NewSlider("Walkspeed", "", true, "/", {min = 30
     end
 end)
 
-local TweenSpeedSlide = ConfigTab:NewSlider("TweenSpeed", "", true, "/", {min = 1, max = 10, default = 6}, function(value)
-    if Config.debugmode then
-        print("TweenSpeed: " .. value)
-    end
+local TweenSpeedSlide = ConfigTab:NewSlider("TweenSpeed", "", true, "/", {min = 1, max = 10, default = Config.defaultTweenSpeed}, function(value)
+    Config.defaultTweenSpeed = value
+    -- tween speed
 end)
 
 -- Settings Section

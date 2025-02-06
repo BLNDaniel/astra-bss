@@ -30,7 +30,9 @@ local Label1 = HomeTab:NewLabel("v0.0.1: NEW UI Loader", "left")
 
 local stopall = HomeTab:NewToggle("Stop Everything", false, function(value)
     local vers = value and "on" or "off"
-    print("two " .. vers)
+    if debugmode then
+       print(value and "✅ Everything stopped" or "❌ everything started") 
+    end
 end)
 
 -- Misc TAB
@@ -39,12 +41,21 @@ local MiscSection = MiscTab:NewSection("Misc")
 
 local ToggleNoclip = MiscTab:NewToggle("Noclip", false, function(value)
     --SetCollisionGroup(value)
-    print(value and "✅ Noclip aktiviert" or "❌ Noclip deaktiviert")
+    if debugmode then
+    print(value and "✅ Noclip activated" or "❌ Noclip deactivated")
+    end
 end):AddKeybind(Enum.KeyCode.N)
+
+local ToggleWalkspeed = MiscTab:NewToggle("Walkspeed Hack", false, function(value)
+    if debugmode then
+    print(value and "✅ Walkspeed activated" or "❌ Walkspeed deactivated")
+    end
+end)
 
 local WalkspeedSlide = MiscTab:NewSlider("Walkspeed", "", true, "/", {min = 1, max = 100, default = 60}, function(value)
     print(value)
 end)
+
 local TweenSpeedSlide = MiscTab:NewSlider("TweenSpeed", "", true, "/", {min = 1, max = 10, default = 6}, function(value)
     print(value)
 end)
@@ -75,6 +86,9 @@ local UISection = UITab:NewSection("UI Settings")
 
 local Keybind1 = UITab:NewKeybind("UI Key", Enum.KeyCode.RightAlt, function(key)
     Init:UpdateKeybind(Enum.KeyCode[key])
+    if debugmode then
+        print("UI Key Toggled")
+    end
 end)
 
 local FinishedLoading = Notif:Notify("Loaded AstraBSS", 4, "success")

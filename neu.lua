@@ -42,25 +42,22 @@ local function formatTime(seconds)
 end
 
 local function getServerUptime()
-    local uptime = game:GetService("Workspace"):GetServerTimeNow()
-    return "⏳ Server Uptime: " .. formatTime(uptime)
+    return "⏳ Server Uptime: " .. formatTime(workspace.DistributedGameTime)
 end
 
 local function getPlayerUptime()
-    local uptime = tick() - clientStartTime
-    return "🎮 Player Uptime: " .. formatTime(uptime)
+    return "🎮 Player Uptime: " .. formatTime(tick() - clientStartTime)
 end
 
--- HOME TAB
 local HomeTab = Init:NewTab("Home")
-local Information = HomeTab:NewSection("Home")
+local Information = HomeTab:NewSection("Information")
 local PlayerUptimeLabel = HomeTab:NewLabel(getPlayerUptime(), "left")
 local ServerUptimeLabel = HomeTab:NewLabel(getServerUptime(), "left")
 local Label1 = HomeTab:NewLabel("v0.0.1: NEW UI Loader", "left")
 
 task.spawn(function()
     while true do
-        wait(2)
+        wait(2)  
         ServerUptimeLabel:Text(getServerUptime())
         PlayerUptimeLabel:Text(getPlayerUptime())
     end

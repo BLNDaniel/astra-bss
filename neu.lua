@@ -1,5 +1,6 @@
 -- Made by DannyGG with <3
 local astrabsslib = loadstring(game:HttpGet("https://raw.githubusercontent.com/BLNDaniel/astra-bss/refs/heads/main/Astra%20Lib%20Src.lua"))()
+local ConfigSaver = loadstring(game:HttpGet("https://raw.githubusercontent.com/Exunys/Config-Library/main/Main.lua"))()
 
 local Config = {
     useRemotes = false,
@@ -20,10 +21,7 @@ local Config = {
     rendering = false,
     transparent = false,
     hideothers = false, 
-    antilag = false
-}
-
-local WebhookConfig = {
+    antilag = false,
     url = "",
     enabled = false,
     interval = 1,
@@ -106,7 +104,7 @@ local function calculateHoneyPerHour(sessionHoney, startTime)
 end
 
 local function sendWebhook()
-    if not WebhookConfig.enabled then return end
+    if not Config.enabled then return end
     
     local currentStats = getStats()
     if not currentStats.honey then 
@@ -144,7 +142,7 @@ local function sendWebhook()
         }
     }
 
-    if WebhookConfig.settings.sendBalloonPollen and currentStats.pollen then
+    if Config.settings.sendBalloonPollen and currentStats.pollen then
         table.insert(fields, {
             ["name"] = "🎈 Current Pollen",
             ["value"] = formatNumber(currentStats.pollen.Value),
@@ -167,7 +165,7 @@ local function sendWebhook()
 
     local success, err = pcall(function()
         request({
-            Url = WebhookConfig.url,
+            Url = Config.url,
             Method = "POST",
             Headers = {
                 ["Content-Type"] = "application/json"
@@ -310,18 +308,18 @@ local WebhookTab = Init:NewTab("Webhook")
 local WebhookSection = WebhookTab:NewSection("Webhook")
 
 local ToggleWebhook = WebhookTab:NewToggle("Enable Webhook", false, function(value)
-    WebhookConfig.enabled = value
+    Config.enabled = value
     if Config.debugmode then
         print(value and "✅ Webhook activated" or "❌ Webhook deactivated")
     end
 end)
 
 local WebhookLink = WebhookTab:NewTextbox("Webhook URL", "", "Webhook URL", "all", "small", true, false, function(val)
-    WebhookConfig.url = val
+    Config.url = val
 end)
 
 local WebhookSlide = WebhookTab:NewSlider("Webhook Interval", "", true, "/", {min = 1, max = 60, default = 20}, function(value)
-    WebhookConfig.interval = value
+    Config.interval = value
 end)
 
 local SendTest = WebhookTab:NewButton("Send Test", function()
@@ -331,27 +329,27 @@ end)
 local WebHookSettings = WebhookTab:NewSection("Webhook Settings")
 
 local SendBallonPolls = WebhookTab:NewToggle("Send Balloon Pollen", false, function(value)
-    WebhookConfig.settings.sendBalloonPollen = value
+    Config.settings.sendBalloonPollen = value
 end)
 
 local SendNectars = WebhookTab:NewToggle("Send Nectars", false, function(value)
-    WebhookConfig.settings.sendNectars = value
+    Config.settings.sendNectars = value
 end)
 
 local SendPlanters = WebhookTab:NewToggle("Send Planters", false, function(value)
-    WebhookConfig.settings.sendPlanters = value
+    Config.settings.sendPlanters = value
 end)
 
 local SendItems = WebhookTab:NewToggle("Send Items", false, function(value)
-    WebhookConfig.settings.sendItems = value
+    Config.settings.sendItems = value
 end)
 
 local SendQuests = WebhookTab:NewToggle("Send Quests Done", false, function(value)
-    WebhookConfig.settings.sendQuests = value
+    Config.settings.sendQuests = value
 end)
 
 local SendDisconnect = WebhookTab:NewToggle("Send Disconnect", false, function(value)
-    WebhookConfig.settings.sendDisconnect = value
+    Config.settings.sendDisconnect = value
 end)
 
 -- Config Tab
@@ -399,7 +397,7 @@ end)
 local SettingsSection = ConfigTab:NewSection("Settings")
 
 local SaveConfig = ConfigTab:NewButton("Save Config", function()
-    -- Save Config
+    ConfigSaver:SaveConfig("Astra/Config.json", Config)
 end)
 
 -- Debug Tab
@@ -513,10 +511,10 @@ end)
 -- Start Webhook Loop
 task.spawn(function()
     while true do
-        if WebhookConfig.enabled then
+        if Config.enabled then
             sendWebhook()
         end
-        task.wait(WebhookConfig.interval)
+        task.wait(Config.interval)
     end
 end)
 

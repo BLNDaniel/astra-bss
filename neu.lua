@@ -276,9 +276,9 @@ end)
 
 local ToggleAutoDig = FarmingTab:NewToggle("Auto Dig", false, function(value)
     if value then
-        autoCollect()  
+        autoCollect()
     else
-        Config.autoCollecting = false  
+        Config.autoCollecting = false
     end
     if Config.debugmode then
         print(value and "✅ AutoDig activated" or "❌ AutoDig deactivated")

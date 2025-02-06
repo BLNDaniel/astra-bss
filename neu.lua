@@ -57,7 +57,6 @@ local ToggleWalkspeed = MiscTab:NewToggle("Walkspeed Hack", false, function(valu
     end
 end)
 
-if walkspeedEnabled then
 local WalkspeedSlide = MiscTab:NewSlider("Walkspeed", "", true, "/", {min = 1, max = 100, default = 60}, function(value)
     if walkspeedEnabled then  
         game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = value
@@ -66,7 +65,6 @@ local WalkspeedSlide = MiscTab:NewSlider("Walkspeed", "", true, "/", {min = 1, m
         end
     end
 end)
-end
 
 local TweenSpeedSlide = MiscTab:NewSlider("TweenSpeed", "", true, "/", {min = 1, max = 10, default = 6}, function(value)
     print(value)

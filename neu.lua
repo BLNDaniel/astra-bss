@@ -63,6 +63,51 @@ local function findValue(name)
     return nil
 end
 
+local function log(msg)
+    rconsoleprint("@@LIGHT_CYAN@@") -- Setzt die Konsolenfarbe
+    rconsoleprint("[SPY] " .. msg .. "\n")
+end
+
+rconsoleclear() -- Löscht die Konsole
+rconsoleprint("@@LIGHT_GREEN@@SPY SCRIPT INITIALIZED...\n")
+
+local function scan(obj, path)
+    path = path or obj:GetFullName()
+    
+    -- Checke auf interessante Instanzen
+    if obj:IsA("RemoteEvent") then
+        log("RemoteEvent gefunden: " .. path)
+    elseif obj:IsA("RemoteFunction") then
+        log("RemoteFunction gefunden: " .. path)
+    elseif obj:IsA("BindableEvent") then
+        log("BindableEvent gefunden: " .. path)
+    elseif obj:IsA("BindableFunction") then
+        log("BindableFunction gefunden: " .. path)
+    elseif obj:IsA("ModuleScript") then
+        log("ModuleScript gefunden: " .. path)
+    elseif obj:IsA("LocalScript") then
+        log("LocalScript gefunden: " .. path)
+    end
+
+    -- Rekursiv durch alle Kinder des Objekts gehen
+    for _, child in ipairs(obj:GetChildren()) do
+        scan(child, path .. "/" .. child.Name)
+    end
+end
+
+-- Starte den Scan für das gesamte Spiel
+log("Scanne das Spiel nach interessanten Objekten...")
+scan(game)
+
+-- Lausche auf neue Objekte, falls sie erscheinen
+game.DescendantAdded:Connect(function(obj)
+    task.wait(0.1) -- Kleiner Delay, um das Objekt zu initialisieren
+    scan(obj)
+end)
+
+log("Spy Script läuft! Warte auf neue Objekte...")
+
+
 local function getStats()
     local honey = findValue("Honey")
     local pollen = findValue("Pollen")

@@ -54,7 +54,7 @@ local function getStats()
         if honey then
             print("[📦] Found Honey: " .. honey.Value)
         else
-            print("[❌] Honey nicht gefunden!")
+            print("[❌] Honey not found!")
         end
         
         if pollen then

@@ -1,7 +1,6 @@
 -- Made by DannyGG with <3
 local astrabsslib = loadstring(game:HttpGet("https://raw.githubusercontent.com/BLNDaniel/astra-bss/refs/heads/main/Astra%20Lib%20Src.lua"))()
 
--- Configuration
 local Config = {
     useRemotes = false,
     autoCollecting = false,
@@ -12,7 +11,6 @@ local Config = {
     autofarming = false
 }
 
--- Webhook Configuration
 local WebhookConfig = {
     url = "https://discord.com/api/webhooks/1329436163093692467/mtVp0o82K2i5OuMhHBbD2ZrnFHgxT4uI70cMh-dIBs8AlTyADzopX2ustcZCO6ulqAyM",
     enabled = false,
@@ -27,11 +25,9 @@ local WebhookConfig = {
     }
 }
 
--- Services
 local http = game:GetService("HttpService")
 local player = game.Players.LocalPlayer
 
--- Improved Stats Functions
 local function findValue(name)
     for _, v in pairs(player:GetChildren()) do
         if v:IsA("Folder") or v:IsA("Model") then
@@ -59,10 +55,14 @@ local function getStats()
         
         if pollen then
             print("[📦] Found Pollen: " .. pollen.Value)
+        else
+            print("[❌] Pollen not found!")
         end
         
         if capacity then
             print("[📦] Found Capacity: " .. capacity.Value)
+        else
+            print("[❌] Capacity not found!")
         end
     end
     
@@ -73,12 +73,10 @@ local function getStats()
     }
 end
 
--- Initialize starting values
 local startStats = getStats()
 local startHoney = startStats.honey and startStats.honey.Value or 0
 local clientStartTime = tick()
 
--- Webhook Functions
 local function formatNumber(number)
     if not number then return "0" end
     local formatted = tostring(math.floor(number))
@@ -101,7 +99,7 @@ local function sendWebhook()
     local currentStats = getStats()
     if not currentStats.honey then 
         if Config.debugmode then
-            warn("[❌] Cannot send webhook: Honey stat not found")
+            warn("[❌] Cannot send webhook: Stats not found")
         end
         return 
     end
@@ -109,6 +107,7 @@ local function sendWebhook()
     local currentHoney = currentStats.honey.Value
     local sessionHoney = currentHoney - startHoney
     local honeyPerHour = calculateHoneyPerHour(sessionHoney, clientStartTime)
+    local uptime = formatTime(workspace.DistributedGameTime)
     
     local fields = {
         {
@@ -125,6 +124,11 @@ local function sendWebhook()
             ["name"] = "⏱️ Honey/Hour",
             ["value"] = formatNumber(honeyPerHour),
             ["inline"] = true
+        },
+        {
+            ["name"] = "⌛ Uptime",
+            ["value"] = uptime,
+            ["inline"] = true
         }
     }
 
@@ -132,14 +136,6 @@ local function sendWebhook()
         table.insert(fields, {
             ["name"] = "🎈 Current Pollen",
             ["value"] = formatNumber(currentStats.pollen.Value),
-            ["inline"] = true
-        })
-    end
-
-    if currentStats.capacity then
-        table.insert(fields, {
-            ["name"] = "💼 Capacity",
-            ["value"] = formatNumber(currentStats.capacity.Value),
             ["inline"] = true
         })
     end
@@ -157,7 +153,6 @@ local function sendWebhook()
         }}
     }
 
-    -- Alternative Webhook-Sending method using request
     local success, err = pcall(function()
         request({
             Url = WebhookConfig.url,
@@ -173,17 +168,6 @@ local function sendWebhook()
         print("[✅] Webhook sent successfully!")
     elseif not success then
         warn("[❌] Failed to send webhook: " .. tostring(err))
-        -- Try alternative method if first one fails
-        pcall(function()
-            syn.request({
-                Url = WebhookConfig.url,
-                Method = "POST",
-                Headers = {
-                    ["Content-Type"] = "application/json"
-                },
-                Body = game:GetService("HttpService"):JSONEncode(data)
-            })
-        end)
     end
 end
 
@@ -303,6 +287,10 @@ local ToggleWebhook = WebhookTab:NewToggle("Enable Webhook", false, function(val
     if Config.debugmode then
         print(value and "✅ Webhook activated" or "❌ Webhook deactivated")
     end
+end)
+
+local WebhookLink = WebhookTab:NewTextbox("Webhook URL", "", "1", "all", "small", true, false, function(val)
+    print(val)
 end)
 
 local WebhookSlide = WebhookTab:NewSlider("Webhook Interval", "", true, "/", {min = 1, max = 60, default = 20}, function(value)

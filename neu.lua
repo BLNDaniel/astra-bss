@@ -35,6 +35,7 @@ local Config = {
     }
 }
 
+task.wait(2)
 Config = Library:LoadConfig("astra/config.json")
 
 local http = game:GetService("HttpService")
@@ -238,7 +239,7 @@ end)
 
 local emptysection = HomeTab:NewSection(" ")
 
-local stopall = HomeTab:NewToggle("Stop Everything", false, function(value)
+local stopall = HomeTab:NewToggle("Stop Everything", Config.stopAll, function(value)
     Config.stopAll = value
     if Config.debugmode then
         print(value and "✅ stopped everything" or "❌ started everything")
@@ -267,14 +268,14 @@ end
 local FarmingTab = Init:NewTab("Farming")
 local FarmingSection = FarmingTab:NewSection("Farming")
 
-local ToggleAutoFarm = FarmingTab:NewToggle("Autofarm", false, function(value)
+local ToggleAutoFarm = FarmingTab:NewToggle("Autofarm", Config.autofarming, function(value)
     Config.autofarming = value
     if Config.debugmode then
         print(value and "✅ AutoFarm activated" or "❌ AutoFarm deactivated")
     end
 end)
 
-local ToggleAutoDig = FarmingTab:NewToggle("Auto Dig", false, function(value)
+local ToggleAutoDig = FarmingTab:NewToggle("Auto Dig", Config.autoCollecting, function(value)
     if value then
         autoCollect()
     else
@@ -309,7 +310,7 @@ local MiscSection = MiscTab:NewSection("Misc")
 local WebhookTab = Init:NewTab("Webhook")
 local WebhookSection = WebhookTab:NewSection("Webhook")
 
-local ToggleWebhook = WebhookTab:NewToggle("Enable Webhook", false, function(value)
+local ToggleWebhook = WebhookTab:NewToggle("Enable Webhook", Config.enabled, function(value)
     Config.enabled = value
     if Config.debugmode then
         print(value and "✅ Webhook activated" or "❌ Webhook deactivated")
@@ -320,7 +321,7 @@ local WebhookLink = WebhookTab:NewTextbox("Webhook URL", "", "Webhook URL", "all
     Config.url = val
 end)
 
-local WebhookSlide = WebhookTab:NewSlider("Webhook Interval", "", true, "/", {min = 1, max = 60, default = 20}, function(value)
+local WebhookSlide = WebhookTab:NewSlider("Webhook Interval", "", true, "/", {min = 1, max = 60, default = Config.interval}, function(value)
     Config.interval = value
 end)
 
@@ -330,27 +331,27 @@ end)
 
 local WebHookSettings = WebhookTab:NewSection("Webhook Settings")
 
-local SendBallonPolls = WebhookTab:NewToggle("Send Balloon Pollen", false, function(value)
+local SendBallonPolls = WebhookTab:NewToggle("Send Balloon Pollen", Config.settings.sendBalloonPollen, function(value)
     Config.settings.sendBalloonPollen = value
 end)
 
-local SendNectars = WebhookTab:NewToggle("Send Nectars", false, function(value)
+local SendNectars = WebhookTab:NewToggle("Send Nectars", Config.settings.sendNectars, function(value)
     Config.settings.sendNectars = value
 end)
 
-local SendPlanters = WebhookTab:NewToggle("Send Planters", false, function(value)
+local SendPlanters = WebhookTab:NewToggle("Send Planters", Config.settings.sendPlanters, function(value)
     Config.settings.sendPlanters = value
 end)
 
-local SendItems = WebhookTab:NewToggle("Send Items", false, function(value)
+local SendItems = WebhookTab:NewToggle("Send Items", Config.settings.sendItems, function(value)
     Config.settings.sendItems = value
 end)
 
-local SendQuests = WebhookTab:NewToggle("Send Quests Done", false, function(value)
+local SendQuests = WebhookTab:NewToggle("Send Quests Done", Config.settings.sendQuests, function(value)
     Config.settings.sendQuests = value
 end)
 
-local SendDisconnect = WebhookTab:NewToggle("Send Disconnect", false, function(value)
+local SendDisconnect = WebhookTab:NewToggle("Send Disconnect", Config.settings.sendDisconnect, function(value)
     Config.settings.sendDisconnect = value
 end)
 
@@ -358,7 +359,7 @@ end)
 local ConfigTab = Init:NewTab("Config")
 local ConfigSection = ConfigTab:NewSection("Configuration")
 
-local ToggleRemotes = ConfigTab:NewToggle("Use Remotes", false, function(value)
+local ToggleRemotes = ConfigTab:NewToggle("Use Remotes", Config.useRemotes, function(value)
     Config.useRemotes = value
     if Config.debugmode then
         print(value and "✅ Remotes activated" or "❌ Remotes deactivated")
@@ -367,7 +368,7 @@ end)
 
 -- Movement Section
 local MovementSection = ConfigTab:NewSection("Movement")
-local ToggleWalkspeed = ConfigTab:NewToggle("Walkspeed Hack", false, function(value)
+local ToggleWalkspeed = ConfigTab:NewToggle("Walkspeed Hack", Config.walkspeedEnabled, function(value)
     Config.walkspeedEnabled = value
     if value then
         game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = Config.defaultWalkspeed
@@ -379,7 +380,7 @@ local ToggleWalkspeed = ConfigTab:NewToggle("Walkspeed Hack", false, function(va
     end
 end)
 
-local WalkspeedSlide = ConfigTab:NewSlider("Walkspeed", "", true, "/", {min = 30, max = 100, default = 60}, function(value)
+local WalkspeedSlide = ConfigTab:NewSlider("Walkspeed", "", true, "/", {min = 30, max = 100, default = Config.defaultWalkspeed}, function(value)
     Config.defaultWalkspeed = value
     if Config.walkspeedEnabled then
         game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = value
@@ -406,14 +407,14 @@ end)
 local DebugTab = Init:NewTab("Debug")
 local DebugSection = DebugTab:NewSection("Debug")
 
-local Toggledebug = DebugTab:NewToggle("Debug Logs", false, function(value)
+local Toggledebug = DebugTab:NewToggle("Debug Logs", Config.debugmode, function(value)
     Config.debugmode = value
     if Config.debugmode then
         print(value and "✅ Debug Logs activated" or "❌ Debug Logs deactivated")
     end
 end)
 
-local ToggleAnonymous = DebugTab:NewToggle("Anonymous Mode", false, function(value)
+local ToggleAnonymous = DebugTab:NewToggle("Anonymous Mode", Config.anonymousmode, function(value)
     Config.anonymousmode = value
     if Config.debugmode then
         print(value and "✅ Anonymous Mode activated" or "❌ Anonymous Mode deactivated")
@@ -422,77 +423,77 @@ end)
 
 local AntiLagSection = DebugTab:NewSection("AntiLag")
 
-local ToggleHideTokens = DebugTab:NewToggle("Hide Tokens", false, function(value)
+local ToggleHideTokens = DebugTab:NewToggle("Hide Tokens", Config.hidetokens, function(value)
     Config.hidetokens = value
     if Config.debugmode then
         print(value and "✅ Hide Tokens activated" or "❌ Hide Tokens deactivated")
     end
 end)
 
-local ToggleHideParticles = DebugTab:NewToggle("Hide Particles", false, function(value)
+local ToggleHideParticles = DebugTab:NewToggle("Hide Particles", Config.hideparticles, function(value)
     Config.hideparticles = value
     if Config.debugmode then
         print(value and "✅ Hide Particles activated" or "❌ Hide Particles deactivated")
     end
 end)
 
-local ToggleHideBees = DebugTab:NewToggle("Hide Bees", false, function(value)
+local ToggleHideBees = DebugTab:NewToggle("Hide Bees", Config.hidebees, function(value)
     Config.hidebees = value
     if Config.debugmode then
         print(value and "✅ Hide Bees activated" or "❌ Hide Bees deactivated")
     end
 end)
 
-local ToggleHideFlowers = DebugTab:NewToggle("Hide Flowers", false, function(value)
+local ToggleHideFlowers = DebugTab:NewToggle("Hide Flowers", Config.hideflowers, function(value)
     Config.hideflowers = value
     if Config.debugmode then
         print(value and "✅ Hide Flowers activated" or "❌ Hide Flowers deactivated")
     end
 end)
 
-local ToggleDestroyBalloons = DebugTab:NewToggle("Destroy Balloons", false, function(value)
+local ToggleDestroyBalloons = DebugTab:NewToggle("Destroy Balloons", Config.destroyballoons, function(value)
     Config.destroyballoons = value
     if Config.debugmode then
         print(value and "✅ Destroy Balloons activated" or "❌ Destroy Balloons deactivated")
     end
 end)
 
-local ToggleDestroyTextures = DebugTab:NewToggle("Destroy Textures", false, function(value)
+local ToggleDestroyTextures = DebugTab:NewToggle("Destroy Textures", Config.destroytextures, function(value)
     Config.destroytextures = value
     if Config.debugmode then
         print(value and "✅ Destroy Textures activated" or "❌ Destroy Textures deactivated")
     end
 end)
 
-local ToggleDestroyDec = DebugTab:NewToggle("Destroy Decorations", false, function(value)
+local ToggleDestroyDec = DebugTab:NewToggle("Destroy Decorations", Config.destroydecorations, function(value)
     Config.destroydecorations = value
     if Config.debugmode then
         print(value and "✅ Destroy Decorations activated" or "❌ Destroy Decorations deactivated")
     end
 end)
 
-local Toggle3DRendering = DebugTab:NewToggle("Disable 3D Rendering", false, function(value)
+local Toggle3DRendering = DebugTab:NewToggle("Disable 3D Rendering", Config.rendering, function(value)
     Config.rendering = value
     if Config.debugmode then
         print(value and "✅ Disable 3D Rendering activated" or "❌ Disable 3D Rendering deactivated")
     end
 end)
 
-local Toggletransparent = DebugTab:NewToggle("Make Everything Transparent", false, function(value)
+local Toggletransparent = DebugTab:NewToggle("Make Everything Transparent", Config.transparent, function(value)
     Config.transparent = value
     if Config.debugmode then
         print(value and "✅ Make Everything Transparent activated" or "❌ Make Everything Transparent deactivated")
     end
 end)
 
-local ToggleHideOthers = DebugTab:NewToggle("Hide Other Players", false, function(value)
+local ToggleHideOthers = DebugTab:NewToggle("Hide Other Players", Config.hideothers, function(value)
     Config.hideothers = value
     if Config.debugmode then
         print(value and "✅ Hide Other Players activated" or "❌ Hide Other Players deactivated")
     end
 end)
 
-local ToggleAntiLag = DebugTab:NewToggle("AntiLag", false, function(value)
+local ToggleAntiLag = DebugTab:NewToggle("AntiLag", Config.antilag, function(value)
     Config.antilag = value
     if Config.debugmode then
         print(value and "✅ AntiLag activated" or "❌ AntiLag deactivated")

@@ -70,7 +70,11 @@ local emptysection = HomeTab:NewSection(" ")
 local stopall = HomeTab:NewToggle("Stop Everything", false, function(value)
     stopAll = value
     if debugmode then
-       print(value and "✅ Everything stopped" or "❌ everything started") 
+        if value then
+            print("✅ stopped everything")
+        else 
+            print("❌ started everything")
+        end
     end
 end)
 
@@ -90,7 +94,7 @@ local function autoCollect()
             wait(0.1)
             VirtualInputManager:SendMouseButtonEvent(0, 0, 0, false, game, 0)
         end
-        wait(3) 
+        wait(1.2) 
     end
 end
 
@@ -105,7 +109,11 @@ local ToggleAutoFarm = FarmingTab:NewToggle("Autofarm", false, function(value)
         autofarming = false
     end
     if debugmode then
-        print(value and "✅ AutoFarm activated" or "❌ AutoFarm deactivated")
+        if value then
+            print("✅ AutoFarm activated")
+        else
+            print("❌ AutoFarm deactivated")
+        end
     end
 end)
 -- Toggle für AutoCollect
@@ -115,9 +123,12 @@ local ToggleAutoDig = FarmingTab:NewToggle("Auto Dig", false, function(value)
     else
         autoCollecting = false  
     end
-
     if debugmode then
-        print(value and "✅ AutoDig activated" or "❌ AutoDig deactivated")
+        if value then
+            print("✅ AutoDig activated")
+        else
+            print("❌ AutoDig deactivated")
+        end
     end
 end)
 
@@ -184,7 +195,11 @@ local ConfigSection = ConfigTab:NewSection("Configuration")
 local ToggleRemotes = ConfigTab:NewToggle("Use Remotes", false, function(value)
     useRemotes = value  
     if debugmode then
-    print(value and "✅ Remotes activated" or "❌ Remotes deactivated")
+        if value then
+            print("✅ Remotes activated")
+        else
+            print("❌ Remotes deactivated")
+        end
     end
 end)
 -- walk speed
@@ -197,7 +212,11 @@ local ToggleWalkspeed = ConfigTab:NewToggle("Walkspeed Hack", false, function(va
         game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 16  
     end
     if debugmode then
-        print(value and "✅ Walkspeed Hack aktiviert" or "❌ Walkspeed Hack deaktiviert")
+        if value then
+            print("✅ Walkspeed Hack aktiviert")
+        else
+            print("❌ Walkspeed Hack deaktiviert")
+        end
     end
 end)
 
@@ -220,7 +239,11 @@ local SettingsSection = ConfigTab:NewSection("Settings")
 local Toggledebug = ConfigTab:NewToggle("Debug Logs", false, function(value)
     debugmode = value  
     if debugmode then
-    print(value and "✅ Debug Logs activated" or "❌ Debug Logs deactivated")
+        if value then
+            print("✅ Debug Logs activated")
+        else
+            print("❌ Debug Logs deactivated")
+        end
     end
 end)
 

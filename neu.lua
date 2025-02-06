@@ -35,17 +35,26 @@ local Config = {
     }
 }
 
+local hives = {
+    {Name = "Hive 6", Position = Vector3.new(-186.31, 6.38, 330.88)},
+    {Name = "Hive 5", Position = Vector3.new(-149.32, 6.38, 331.58)},
+    {Name = "Hive 4", Position = Vector3.new(-113.12, 6.38, 330.47)},
+    {Name = "Hive 3", Position = Vector3.new(-76.40, 6.38, 331.25)},
+    {Name = "Hive 2", Position = Vector3.new(-39.46, 6.38, 330.91)},
+    {Name = "Hive 1", Position = Vector3.new(-3.01, 6.38, 329.70)},
+}
+
 task.wait(2)
 
---local success, loadedConfig = pcall(function()
-  --  return Library:LoadConfig("astra/config.json")
---end)
+local success, loadedConfig = pcall(function()
+   return Library:LoadConfig("astra/config.json")
+end)
 
---if success and loadedConfig then
-  --  Config = loadedConfig
---else
-  --  print("No Config Found.")
---end
+if success and loadedConfig then
+    Config = loadedConfig
+else
+    print("No Config Found.")
+end
 
 local http = game:GetService("HttpService")
 local player = game.Players.LocalPlayer

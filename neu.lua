@@ -187,6 +187,23 @@ local SendDisconnect = WebhookTab:NewToggle("Send Disconnect", false, function(v
     -- comming soon
 end)
 
+-- 🕵️ Scannt nach möglichen Inventardaten des Spielers
+local player = game.Players.LocalPlayer
+
+-- 🔄 Alle 2 Sekunden prüfen, wo Pollen gespeichert ist
+while wait(2) do
+    for _, v in pairs(player:GetChildren()) do
+        if v:IsA("Folder") or v:IsA("Model") then
+            for _, data in pairs(v:GetChildren()) do
+                if data:IsA("IntValue") or data:IsA("NumberValue") then
+                    print("[📦] Found: " .. data.Name .. " = " .. data.Value)
+                end
+            end
+        end
+    end
+end
+
+
 -- Config
 
 local ConfigTab = Init:NewTab("Config")

@@ -37,15 +37,15 @@ local Config = {
 
 task.wait(2)
 
-local success, loadedConfig = pcall(function()
-    return Library:LoadConfig("astra/config.json")
-end)
+--local success, loadedConfig = pcall(function()
+  --  return Library:LoadConfig("astra/config.json")
+--end)
 
-if success and loadedConfig then
-    Config = loadedConfig
-else
-    print("No Config Found.")
-end
+--if success and loadedConfig then
+  --  Config = loadedConfig
+--else
+  --  print("No Config Found.")
+--end
 
 local http = game:GetService("HttpService")
 local player = game.Players.LocalPlayer

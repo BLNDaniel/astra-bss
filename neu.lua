@@ -5,10 +5,17 @@ local autoCollecting = false
 local stopAll = false
 local walkspeedEnabled = false  
 local useWebhooks = false
+local webhookinterval = 20
 local defaultWalkspeed = 60
 local clientStartTime = tick()
 local autofarming = false
 local debugmode = false
+local http = game:GetService("HttpService")
+local player = game.Players.LocalPlayer
+local pollenStat = player:FindFirstChild("Pollen")
+local honeyStat = player:FindFirstChild("Honey")
+local capacityStat = player:FindFirstChild("Capacity")
+local startHoney = honeyStat and honeyStat.Value or 0
 
 astrabsslib.rank = "Premium"
 local Wm = astrabsslib:Watermark("AstraBSS | v" .. astrabsslib.version ..  " | " .. astrabsslib:GetUsername() .. " | rank: " .. astrabsslib.rank)
@@ -146,13 +153,59 @@ local MiscSection = MiscTab:NewSection("Misc")
 
 -- Hive
 
+-- webhook function
+local webhookURL = "https://discord.com/api/webhooks/1329436163093692467/mtVp0o82K2i5OuMhHBbD2ZrnFHgxT4uI70cMh-dIBs8AlTyADzopX2ustcZCO6ulqAyM"
+local function sendWebhook()
+    if not useWebhooks then return end
+    if not honeyStat then return end
+
+    local currentHoney = honeyStat.Value
+    local sessionHoney = currentHoney - startHoney
+
+    local data = {
+        ["embeds"] = {{
+            ["title"] = "🐝 **Honey Update**",
+            ["description"] = "new data available!",
+            ["color"] = 16776960, -- Gelb
+            ["fields"] = {
+                {["name"] = "🍯 Current Honey", ["value"] = tostring(currentHoney), ["inline"] = true},
+                {["name"] = "📊 Session Honey", ["value"] = tostring(sessionHoney), ["inline"] = true}
+            },
+            ["footer"] = {
+                ["text"] = "AstraBSS | Webhook System"
+            },
+            ["timestamp"] = os.date("!%Y-%m-%dT%H:%M:%SZ")
+        }}
+    }
+
+    local jsonData = http:JSONEncode(data)
+
+    local success, err = pcall(function()
+        http:PostAsync(webhookURL, jsonData, Enum.HttpContentType.ApplicationJson)
+    end)
+
+    if success then
+        print("✅ Webhook erfolgreich gesendet!")
+    else
+        warn("❌ Fehler beim Senden des Webhooks: " .. err)
+    end
+end
+
+task.spawn(function()
+    while true do
+        if useWebhooks then
+            sendWebhook()
+        end
+        wait(webhookinterval)
+    end
+end)
+
 -- Webhook
 local WebhookTab = Init:NewTab("Webhook")
 local WebhookSection = WebhookTab:NewSection("Webhook")
 
 local ToggleWebhook = WebhookTab:NewToggle("Enable Webhook", false, function(value)
     useWebhooks = value
-    -- comming soon
 end)
 
 local WebhookSlide = WebhookTab:NewSlider("Webhook Interval", "", true, "/", {min = 1, max = 60, default = 20}, function(value)
@@ -186,23 +239,6 @@ local SendDisconnect = WebhookTab:NewToggle("Send Disconnect", false, function(v
     senddisconnectt = value
     -- comming soon
 end)
-
--- 🕵️ Scannt nach möglichen Inventardaten des Spielers
-local player = game.Players.LocalPlayer
-
--- 🔄 Alle 2 Sekunden prüfen, wo Pollen gespeichert ist
-while wait(2) do
-    for _, v in pairs(player:GetChildren()) do
-        if v:IsA("Folder") or v:IsA("Model") then
-            for _, data in pairs(v:GetChildren()) do
-                if data:IsA("IntValue") or data:IsA("NumberValue") then
-                    print("[📦] Found: " .. data.Name .. " = " .. data.Value)
-                end
-            end
-        end
-    end
-end
-
 
 -- Config
 

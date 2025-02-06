@@ -6,6 +6,7 @@ local stopAll = false
 local walkspeedEnabled = false  
 local useWebhooks = false
 local defaultWalkspeed = 60
+local playerStartTime = tick()  
 
 astrabsslib.rank = "Premium"
 local Wm = astrabsslib:Watermark("AstraBSS | v" .. astrabsslib.version ..  " | " .. astrabsslib:GetUsername() .. " | rank: " .. astrabsslib.rank)
@@ -30,31 +31,39 @@ astrabsslib:Introduction()
 wait(1)
 local Init = astrabsslib:Init()
 
--- Server Uptime
+-- Uptimes
+local function formatTime(seconds)
+    local hours = math.floor(seconds / 3600)
+    local minutes = math.floor((seconds % 3600) / 60)
+    local sec = math.floor(seconds % 60)
+    return string.format("%02d:%02d:%02d", hours, minutes, sec)
+end
+
 local function getServerUptime()
     local serverStartTime = game:GetService("Stats").ServerTime or tick()
     local uptime = tick() - serverStartTime  
+    return "⏳ Server Uptime: " .. formatTime(uptime)
+end
 
-    local hours = math.floor(uptime / 3600)
-    local minutes = math.floor((uptime % 3600) / 60)
-    local seconds = math.floor(uptime % 60)
-
-    return string.format("⏳ Server Uptime: %02d:%02d:%02d", hours, minutes, seconds)
+local function getPlayerUptime()
+    local uptime = tick() - playerStartTime
+    return "🎮 Player Uptime: " .. formatTime(uptime)
 end
 
 -- HOME TAB
 local HomeTab = Init:NewTab("Home")
 local Information = HomeTab:NewSection("Home")
-local UptimeLabel = HomeTab:NewLabel(getServerUptime(), "left")
+local PlayerUptimeLabel = HomeTab:NewLabel(getPlayerUptime(), "left")
+local ServerUptimeLabel = HomeTab:NewLabel(getServerUptime(), "left")
 local Label1 = HomeTab:NewLabel("v0.0.1: NEW UI Loader", "left")
 
 task.spawn(function()
     while true do
-        wait(1)
-        UptimeLabel:Text(getServerUptime())
+        wait(2)
+        ServerUptimeLabel:Text(getServerUptime())
+        PlayerUptimeLabel:Text(getPlayerUptime())
     end
 end)
-
 
 local stopall = HomeTab:NewToggle("Stop Everything", false, function(value)
     stopAll = value

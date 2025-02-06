@@ -64,6 +64,8 @@ task.spawn(function()
     end
 end)
 
+local emptysection = HomeTab:NewSection(" ")
+
 local stopall = HomeTab:NewToggle("Stop Everything", false, function(value)
     stopAll = value
     if debugmode then

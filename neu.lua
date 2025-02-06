@@ -69,12 +69,12 @@ local function log(msg)
 end
 
 rconsoleclear() -- Löscht die Konsole
-rconsoleprint("@@LIGHT_GREEN@@SPY SCRIPT INITIALIZED...\n")
+rconsoleprint("@@LIGHT_GREEN@@ SPY SCRIPT INITIALIZED...\n")
 
 local function scan(obj, path)
     path = path or obj:GetFullName()
     
-    -- Checke auf interessante Instanzen
+    -- Checke auf Events & Funktionen (ohne ModuleScripts!)
     if obj:IsA("RemoteEvent") then
         log("RemoteEvent gefunden: " .. path)
     elseif obj:IsA("RemoteFunction") then
@@ -83,10 +83,6 @@ local function scan(obj, path)
         log("BindableEvent gefunden: " .. path)
     elseif obj:IsA("BindableFunction") then
         log("BindableFunction gefunden: " .. path)
-    elseif obj:IsA("ModuleScript") then
-        log("ModuleScript gefunden: " .. path)
-    elseif obj:IsA("LocalScript") then
-        log("LocalScript gefunden: " .. path)
     end
 
     -- Rekursiv durch alle Kinder des Objekts gehen
@@ -96,16 +92,17 @@ local function scan(obj, path)
 end
 
 -- Starte den Scan für das gesamte Spiel
-log("Scanne das Spiel nach interessanten Objekten...")
+log("Scanne das Spiel nach Events & Funktionen...")
 scan(game)
 
--- Lausche auf neue Objekte, falls sie erscheinen
+-- Lausche auf neue Objekte
 game.DescendantAdded:Connect(function(obj)
     task.wait(0.1) -- Kleiner Delay, um das Objekt zu initialisieren
     scan(obj)
 end)
 
-log("Spy Script läuft! Warte auf neue Objekte...")
+log("Spy Script läuft! Warte auf neue Events & Funktionen...")
+
 
 
 local function getStats()

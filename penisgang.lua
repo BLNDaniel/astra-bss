@@ -1,28 +1,27 @@
-local library = loadstring(game:HttpGet("https://raw.githubusercontent.com/Consistt/Ui/main/UnLeaked"))()
+local astrabsslib = loadstring(game:HttpGet("https://raw.githubusercontent.com/Consistt/Ui/main/UnLeaked"))()
 
-
-library.rank = "Premium"
-local Wm = library:Watermark("AstraBSS | v" .. library.version ..  " | " .. library:GetUsername() .. " | rank: " .. library.rank)
-local FpsWm = Wm:AddWatermark("fps: " .. library.fps)
+astrabsslib.rank = "Premium"
+local Wm = astrabsslib:Watermark("AstraBSS | v" .. astrabsslib.version ..  " | " .. astrabsslib:GetUsername() .. " | rank: " .. astrabsslib.rank)
+local FpsWm = Wm:AddWatermark("fps: " .. astrabsslib.fps)
 coroutine.wrap(function()
     while wait(.75) do
-        FpsWm:Text("fps: " .. library.fps)
+        FpsWm:Text("fps: " .. astrabsslib.fps)
     end
 end)()
 
 
-local Notif = library:InitNotifications()
+local Notif = astrabsslib:InitNotifications()
 
 for i = 20,0,-1 do 
     task.wait(0.05)
     local LoadingXSX = Notif:Notify("Loading Astra V1, please be patient.", 3, "information")
 end 
 
-library.title = "AstraBSS"
+astrabsslib.title = "AstraBSS"
 
-library:Introduction()
+astrabsslib:Introduction()
 wait(1)
-local Init = library:Init()
+local Init = astrabsslib:Init()
 
 
 -- HOME TAB
@@ -33,20 +32,44 @@ local Label1 = Home:NewLabel("v0.0.1: NEW UI Loader", "left")
 local stopall = Home:NewToggle("Stop Everything", false, function(value)
     local vers = value and "on" or "off"
     print("two " .. vers)
-end):AddKeybind(Enum.KeyCode.LeftControl)
-
-local Keybind1 = Home:NewKeybind("UI Key", Enum.KeyCode.RightAlt, function(key)
-    Init:UpdateKeybind(Enum.KeyCode[key])
-end)
-
-local WalkspeedSlide = Home:NewSlider("Walkspeed", "", true, "/", {min = 1, max = 100, default = 20}, function(value)
-    print(value)
 end)
 
 -- Misc TAB
 local Misc = Init:NewTab("Misc")
 local MiscSection = Misc:NewSection("Misc")
 local MiscLabel = Misc:NewLabel("Misc Test")
+local WalkspeedSlide = Misc:NewSlider("Walkspeed", "", true, "/", {min = 1, max = 100, default = 60}, function(value)
+    print(value)
+end)
+local TweenSpeedSlide = Misc:NewSlider("TweenSpeed", "", true, "/", {min = 1, max = 10, default = 6}, function(value)
+    print(value)
+end)
+
+-- Farming
+
+-- Combat
+
+-- Auto Quest
+
+-- Auto Planters
+
+-- Items
+
+-- Misc
+
+-- Hive
+
+-- Configuration
+
+-- UI 
+
+local UITab = Init:NewTab("UI")
+local UISection = UITab:NewSection("UI Settings")
+local UILabel = UITab:NewLabel("UI Settings")
+
+local Keybind1 = UITab:NewKeybind("UI Key", Enum.KeyCode.RightAlt, function(key)
+    Init:UpdateKeybind(Enum.KeyCode[key])
+end)
 
 local FinishedLoading = Notif:Notify("Loaded AstraBSS", 4, "success")
 
@@ -54,25 +77,25 @@ local FinishedLoading = Notif:Notify("Loaded AstraBSS", 4, "success")
 --[[
     MAIN COMPONENT DOCS:
 
-    -- // local library = loadstring(game:HttpGet(link: url))()
-    -- // library.title = text: string
-    -- // local Window = library:Init()
+    -- // local astrabsslib = loadstring(game:HttpGet(link: url))()
+    -- // astrabsslib.title = text: string
+    -- // local Window = astrabsslib:Init()
 
-    -- [library.title contains rich text]
+    -- [astrabsslib.title contains rich text]
 
-    -- / library:Remove()
-    -- destroys the library
+    -- / astrabsslib:Remove()
+    -- destroys the astrabsslib
 
-    -- / library:Text("new")
+    -- / astrabsslib:Text("new")
     -- sets the lbrary's text to something new
 
-    - / library:UpdateKeybind(Enum.KeyCode.RightAlt)
+    - / astrabsslib:UpdateKeybind(Enum.KeyCode.RightAlt)
     -- sets the lbrary's keybind to switch visibility to something new
 
     __________________________
 
-    -- // local notificationLibrary = library:InitNotifications()
-    -- // local Notification = notificationLibrary:Notify(text: string, time: number, type: string (information, notification, alert, error, success))
+    -- // local notificationastrabsslib = astrabsslib:InitNotifications()
+    -- // local Notification = notificationastrabsslib:Notify(text: string, time: number, type: string (information, notification, alert, error, success))
 
     -- [Notify contains rich text]
 
@@ -87,7 +110,7 @@ local FinishedLoading = Notif:Notify("Loaded AstraBSS", 4, "success")
 
     __________________________
 
-    -- // local Wm = library:Watermark(text: string)
+    -- // local Wm = astrabsslib:Watermark(text: string)
 
     -- [Watermark contains rich text]
 
@@ -307,57 +330,57 @@ local FinishedLoading = Notif:Notify("Loaded AstraBSS", 4, "success")
 
     MISC SEMI USELESS DOCS:
 
-    -- / library.rank = ""
+    -- / astrabsslib.rank = ""
     -- returns the rank you choose (default = "private")
 
-    -- / library.fps
+    -- / astrabsslib.fps
     -- returns FPS you're getting in game
 
-    -- / library.version
-    -- returns the version of the library
+    -- / astrabsslib.version
+    -- returns the version of the astrabsslib
 
-    -- / library.title = ""
-    -- returns the title of the library
+    -- / astrabsslib.title = ""
+    -- returns the title of the astrabsslib
 
-    -- / library:GetDay("word") -- word, short, month, year
+    -- / astrabsslib:GetDay("word") -- word, short, month, year
     -- returns the os day
 
-    -- / library:GetTime("24h") -- 24h, 12h, minute, half, second, full, ISO, zone
+    -- / astrabsslib:GetTime("24h") -- 24h, 12h, minute, half, second, full, ISO, zone
     -- returns the os time
 
-    -- / library:GetMonth("word") -- word, short, digit
+    -- / astrabsslib:GetMonth("word") -- word, short, digit
     -- returns the os month
 
-    -- / library:GetWeek("year_S") -- year_S, day, year_M
+    -- / astrabsslib:GetWeek("year_S") -- year_S, day, year_M
     -- returns the os week
 
-    -- / library:GetYear("digits") -- digits, full
+    -- / astrabsslib:GetYear("digits") -- digits, full
     -- returns the os year
 
-    -- / library:GetUsername()
+    -- / astrabsslib:GetUsername()
     -- returns the localplayers username
 
-    -- / library:GetUserId()
+    -- / astrabsslib:GetUserId()
     -- returns the localplayers userid
 
-    -- / library:GetPlaceId()
+    -- / astrabsslib:GetPlaceId()
     -- returns the games place id
 
-    -- / library:GetJobId()
+    -- / astrabsslib:GetJobId()
     -- returns the games job id
 
-    -- / library:CheckIfLoaded()
+    -- / astrabsslib:CheckIfLoaded()
     -- returns true if you're fully loaded
 
-    -- / library:Rejoin()
+    -- / astrabsslib:Rejoin()
     -- rejoins the same server as you was in
 
-    -- / library:Copy("stuff")
+    -- / astrabsslib:Copy("stuff")
     -- copies the inputed string
 
-    -- / library:UnlockFps(500) -- only works with synapse
+    -- / astrabsslib:UnlockFps(500) -- only works with synapse
     -- sets the max fps to something you choose
     
-    -- / library:PromptDiscord("invite")
+    -- / astrabsslib:PromptDiscord("invite")
     -- invites you to a discord
 ]]

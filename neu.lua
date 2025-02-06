@@ -121,10 +121,6 @@ local ToggleAutoDig = FarmingTab:NewToggle("Auto Dig", false, function(value)
     end
 end)
 
--- Combat
-local CombatTab = Init:NewTab("Combat")
-local CombatSection = CombatTab:NewSection("Combat")
-
 -- Misc TAB
 local MiscTab = Init:NewTab("Misc")
 local MiscSection = MiscTab:NewSection("Misc")

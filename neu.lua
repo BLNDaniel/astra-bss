@@ -108,6 +108,15 @@ local startStats = getStats()
 local startHoney = startStats.honey and startStats.honey.Value or 0
 local clientStartTime = tick()
 
+local function formatTime(seconds)
+    local days = math.floor(seconds / 86400)
+    local hours = math.floor((seconds % 86400) / 3600)
+    local minutes = math.floor((seconds % 3600) / 60)
+    local sec = math.floor(seconds % 60)
+    
+    return string.format("%d Days, %02d:%02d:%02d", days, hours, minutes, sec)
+end
+
 local function formatNumber(number)
     if not number then return "0" end
     local formatted = tostring(math.floor(number))

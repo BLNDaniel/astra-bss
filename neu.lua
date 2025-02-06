@@ -8,7 +8,19 @@ local Config = {
     walkspeedEnabled = false,
     defaultWalkspeed = 60,
     debugmode = false,
-    autofarming = false
+    autofarming = false,
+    anonymousmode = false,
+    hidetokens = false,
+    hideparticles = false
+    hidebees = false,
+    hideflowers = false,
+    destroyballoons = false,
+    destroytextures = false,
+    destroydecorations = false,
+    rendering = false,
+    transparent = false,
+    hideothers = false, 
+    antilag = false
 }
 
 local WebhookConfig = {
@@ -274,6 +286,22 @@ local ToggleAutoDig = FarmingTab:NewToggle("Auto Dig", false, function(value)
     end
 end)
 
+-- Combat Tab
+local CombatTab = Init:NewTab("Combat")
+local CombatSection = CombatTab:NewSection("Combat")
+
+-- Quest Tab
+local QuestTab = Init:NewTab("Quest")
+local QuestSection = QuestTab:NewSection("Quest")
+
+-- Planters Tab
+local PlantersTab = Init:NewTab("Planters")
+local PlantersSection = PlantersTab:NewSection("Planters")
+
+-- Toys Tab
+local ToysTab = Init:NewTab("Toys")
+local ToysSection = ToysTab:NewSection("Toys")
+
 -- Misc Tab
 local MiscTab = Init:NewTab("Misc")
 local MiscSection = MiscTab:NewSection("Misc")
@@ -367,15 +395,105 @@ end)
 -- Settings Section
 local SettingsSection = ConfigTab:NewSection("Settings")
 
-local Toggledebug = ConfigTab:NewToggle("Debug Logs", false, function(value)
+local SaveConfig = ConfigTab:NewButton("Save Config", function()
+    -- Save Config
+end)
+
+-- Debug Tab
+local DebugTab = Init:NewTab("Debug")
+local DebugSection = DebugTab:NewSection("Debug")
+
+local Toggledebug = DebugTab:NewToggle("Debug Logs", false, function(value)
     Config.debugmode = value
     if Config.debugmode then
         print(value and "✅ Debug Logs activated" or "❌ Debug Logs deactivated")
     end
 end)
 
-local SaveConfig = ConfigTab:NewButton("Save Config", function()
-    -- Save Config
+local ToggleAnonymous = DebugTab:NewToggle("Anonymous Mode", false, function(value)
+    Config.anonymousmode = value
+    if Config.debugmode then
+        print(value and "✅ Anonymous Mode activated" or "❌ Anonymous Mode deactivated")
+    end
+end)
+
+local AntiLagSection = DebugTab:NewSection("AntiLag")
+
+local ToggleHideTokens = DebugTab:NewToggle("Hide Tokens", false, function(value)
+    Config.hidetokens = value
+    if Config.debugmode then
+        print(value and "✅ Hide Tokens activated" or "❌ Hide Tokens deactivated")
+    end
+end)
+
+local ToggleHideParticles = DebugTab:NewToggle("Hide Particles", false, function(value)
+    Config.hideparticles = value
+    if Config.debugmode then
+        print(value and "✅ Hide Particles activated" or "❌ Hide Particles deactivated")
+    end
+end)
+
+local ToggleHideBees = DebugTab:NewToggle("Hide Bees", false, function(value)
+    Config.hidebees = value
+    if Config.debugmode then
+        print(value and "✅ Hide Bees activated" or "❌ Hide Bees deactivated")
+    end
+end)
+
+local ToggleHideFlowers = DebugTab:NewToggle("Hide Flowers", false, function(value)
+    Config.hideflowers = value
+    if Config.debugmode then
+        print(value and "✅ Hide Flowers activated" or "❌ Hide Flowers deactivated")
+    end
+end)
+
+local ToggleDestroyBalloons = DebugTab:NewToggle("Destroy Balloons", false, function(value)
+    Config.destroyballoons = value
+    if Config.debugmode then
+        print(value and "✅ Destroy Balloons activated" or "❌ Destroy Balloons deactivated")
+    end
+end)
+
+local ToggleDestroyTextures = DebugTab:NewToggle("Destroy Textures", false, function(value)
+    Config.destroytextures = value
+    if Config.debugmode then
+        print(value and "✅ Destroy Textures activated" or "❌ Destroy Textures deactivated")
+    end
+end)
+
+local ToggleDestroyDec = DebugTab:NewToggle("Destroy Decorations", false, function(value)
+    Config.destroydecorations = value
+    if Config.debugmode then
+        print(value and "✅ Destroy Decorations activated" or "❌ Destroy Decorations deactivated")
+    end
+end)
+
+local Toggle3DRendering = DebugTab:NewToggle("Disable 3D Rendering", false, function(value)
+    Config.rendering = value
+    if Config.debugmode then
+        print(value and "✅ Disable 3D Rendering activated" or "❌ Disable 3D Rendering deactivated")
+    end
+end)
+
+local Toggletransparent = DebugTab:NewToggle("Make Everything Transparent", false, function(value)
+    Config.transparent = value
+    if Config.debugmode then
+        print(value and "✅ Make Everything Transparent activated" or "❌ Make Everything Transparent deactivated")
+    end
+end)
+
+local ToggleHideOthers = DebugTab:NewToggle("Hide Other Players", false, function(value)
+    Config.hideothers = value
+    if Config.debugmode then
+        print(value and "✅ Hide Other Players activated" or "❌ Hide Other Players deactivated")
+    end
+end)
+
+local ToggleAntiLag = DebugTab:NewToggle("AntiLag", false, function(value)
+    Config.antilag = value
+    if Config.debugmode then
+        print(value and "✅ AntiLag activated" or "❌ AntiLag deactivated")
+    end
 end)
 
 -- UI Tab

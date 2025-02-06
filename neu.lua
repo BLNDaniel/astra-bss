@@ -30,10 +30,31 @@ astrabsslib:Introduction()
 wait(1)
 local Init = astrabsslib:Init()
 
+-- Server Uptime
+local function getServerUptime()
+    local serverStartTime = game:GetService("Stats").ServerTime or tick()
+    local uptime = tick() - serverStartTime  
+
+    local hours = math.floor(uptime / 3600)
+    local minutes = math.floor((uptime % 3600) / 60)
+    local seconds = math.floor(uptime % 60)
+
+    return string.format("⏳ Server Uptime: %02d:%02d:%02d", hours, minutes, seconds)
+end
+
 -- HOME TAB
 local HomeTab = Init:NewTab("Home")
-local Information = HomeTab:NewSection("Information")
+local Information = HomeTab:NewSection("Home")
+local UptimeLabel = HomeTab:NewLabel(getServerUptime(), "left")
 local Label1 = HomeTab:NewLabel("v0.0.1: NEW UI Loader", "left")
+
+task.spawn(function()
+    while true do
+        wait(1)
+        UptimeLabel:Text(getServerUptime())
+    end
+end)
+
 
 local stopall = HomeTab:NewToggle("Stop Everything", false, function(value)
     stopAll = value

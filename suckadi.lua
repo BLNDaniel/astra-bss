@@ -1,4 +1,8 @@
 local astrabsslib = loadstring(game:HttpGet("https://raw.githubusercontent.com/Consistt/Ui/main/UnLeaked"))()
+local PhysicsService = game:GetService("PhysicsService")
+local Players = game:GetService("Players")
+local player = Players.LocalPlayer
+local character = player.Character or player.CharacterAdded:Wait()
 
 astrabsslib.rank = "Premium"
 local Wm = astrabsslib:Watermark("AstraBSS | v" .. astrabsslib.version ..  " | " .. astrabsslib:GetUsername() .. " | rank: " .. astrabsslib.rank)
@@ -37,7 +41,12 @@ end)
 -- Misc TAB
 local Misc = Init:NewTab("Misc")
 local MiscSection = Misc:NewSection("Misc")
-local MiscLabel = Misc:NewLabel("Misc Test")
+
+local ToggleNoclip = Misc:NewToggle("Noclip", false, function(value)
+    SetCollisionGroup(value)
+    print(value and "✅ Noclip aktiviert" or "❌ Noclip deaktiviert")
+end):AddKeybind(Enum.KeyCode.N)
+
 local WalkspeedSlide = Misc:NewSlider("Walkspeed", "", true, "/", {min = 1, max = 100, default = 60}, function(value)
     print(value)
 end)
@@ -65,13 +74,40 @@ end)
 
 local UITab = Init:NewTab("UI")
 local UISection = UITab:NewSection("UI Settings")
-local UILabel = UITab:NewLabel("UI Settings")
 
 local Keybind1 = UITab:NewKeybind("UI Key", Enum.KeyCode.RightAlt, function(key)
     Init:UpdateKeybind(Enum.KeyCode[key])
 end)
 
 local FinishedLoading = Notif:Notify("Loaded AstraBSS", 4, "success")
+
+-- Functions
+
+-- Collision Group
+local groupName = "NoclipGroup"
+if not pcall(function() PhysicsService:CreateCollisionGroup(groupName) end) then
+    print("Collision Group existiert bereits.")
+end
+PhysicsService:CollisionGroupSetCollidable(groupName, groupName, false)
+
+local function SetCollisionGroup(state)
+    for _, part in pairs(character:GetChildren()) do
+        if part:IsA("BasePart") then
+            part.CollisionGroup = state and groupName or "Default"
+        end
+    end
+end
+
+player.CharacterAdded:Connect(function(newCharacter)
+    character = newCharacter
+    task.wait(1) 
+    if ToggleNoclip:GetState() then
+        SetCollisionGroup(true)
+    end
+end)
+
+
+
 
 -- // FUNCTION DOCS: 
 --[[

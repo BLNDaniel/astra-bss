@@ -1,22 +1,130 @@
 -- Made by DannyGG with <3
 local astrabsslib = loadstring(game:HttpGet("https://raw.githubusercontent.com/BLNDaniel/astra-bss/refs/heads/main/Astra%20Lib%20Src.lua"))()
-local useRemotes = false
-local autoCollecting = false 
-local stopAll = false
-local walkspeedEnabled = false  
-local useWebhooks = false
-local webhookinterval = 1
-local defaultWalkspeed = 60
-local clientStartTime = tick()
-local autofarming = false
-local debugmode = false
+
+-- Configuration
+local Config = {
+    useRemotes = false,
+    autoCollecting = false,
+    stopAll = false,
+    walkspeedEnabled = false,
+    defaultWalkspeed = 60,
+    debugmode = false,
+    autofarming = false
+}
+
+-- Webhook Configuration
+local WebhookConfig = {
+    url = "https://discord.com/api/webhooks/1329436163093692467/mtVp0o82K2i5OuMhHBbD2ZrnFHgxT4uI70cMh-dIBs8AlTyADzopX2ustcZCO6ulqAyM",
+    enabled = false,
+    interval = 20,
+    settings = {
+        sendBalloonPollen = false,
+        sendNectars = false,
+        sendPlanters = false,
+        sendItems = false,
+        sendQuests = false,
+        sendDisconnect = false
+    }
+}
+
+-- Services
 local http = game:GetService("HttpService")
 local player = game.Players.LocalPlayer
+
+-- Stats
 local pollenStat = player:FindFirstChild("Pollen")
 local honeyStat = player:FindFirstChild("Honey")
 local capacityStat = player:FindFirstChild("Capacity")
 local startHoney = honeyStat and honeyStat.Value or 0
+local clientStartTime = tick()
 
+-- Webhook Functions
+local function formatNumber(number)
+    if not number then return "0" end
+    local formatted = tostring(math.floor(number))
+    local k
+    while true do  
+        formatted, k = string.gsub(formatted, "^(-?%d+)(%d%d%d)", '%1,%2')
+        if k == 0 then break end
+    end
+    return formatted
+end
+
+local function calculateHoneyPerHour(sessionHoney, startTime)
+    local timeElapsed = (tick() - startTime) / 3600
+    return timeElapsed > 0 and (sessionHoney / timeElapsed) or 0
+end
+
+local function sendWebhook()
+    if not WebhookConfig.enabled then return end
+    if not honeyStat then 
+        warn("❌ Cannot send webhook: Honey stat not found")
+        return 
+    end
+
+    local currentHoney = honeyStat.Value
+    local sessionHoney = currentHoney - startHoney
+    local honeyPerHour = calculateHoneyPerHour(sessionHoney, clientStartTime)
+    
+    local fields = {
+        {
+            ["name"] = "🍯 Current Honey",
+            ["value"] = formatNumber(currentHoney),
+            ["inline"] = true
+        },
+        {
+            ["name"] = "📊 Session Honey",
+            ["value"] = formatNumber(sessionHoney),
+            ["inline"] = true
+        },
+        {
+            ["name"] = "⏱️ Honey/Hour",
+            ["value"] = formatNumber(honeyPerHour),
+            ["inline"] = true
+        }
+    }
+
+    if WebhookConfig.settings.sendBalloonPollen and pollenStat then
+        table.insert(fields, {
+            ["name"] = "🎈 Current Pollen",
+            ["value"] = formatNumber(pollenStat.Value),
+            ["inline"] = true
+        })
+    end
+
+    if capacityStat then
+        table.insert(fields, {
+            ["name"] = "💼 Capacity",
+            ["value"] = formatNumber(capacityStat.Value),
+            ["inline"] = true
+        })
+    end
+
+    local data = {
+        ["embeds"] = {{
+            ["title"] = "🐝 BSS Status Update",
+            ["description"] = "Current statistics for " .. player.Name,
+            ["color"] = 16776960,
+            ["fields"] = fields,
+            ["footer"] = {
+                ["text"] = "AstraBSS | " .. os.date("%Y-%m-%d %H:%M:%S")
+            },
+            ["timestamp"] = os.date("!%Y-%m-%dT%H:%M:%SZ")
+        }}
+    }
+
+    local success, err = pcall(function()
+        http:PostAsync(WebhookConfig.url, http:JSONEncode(data))
+    end)
+
+    if success and Config.debugmode then
+        print("✅ Webhook sent successfully!")
+    elseif not success then
+        warn("❌ Failed to send webhook: " .. tostring(err))
+    end
+end
+
+-- UI Setup
 astrabsslib.rank = "Premium"
 local Wm = astrabsslib:Watermark("AstraBSS | v" .. astrabsslib.version ..  " | " .. astrabsslib:GetUsername() .. " | rank: " .. astrabsslib.rank)
 local FpsWm = Wm:AddWatermark("fps: " .. astrabsslib.fps)
@@ -26,7 +134,6 @@ coroutine.wrap(function()
     end
 end)()
 
-
 local Notif = astrabsslib:InitNotifications()
 
 for i = 10,0,-1 do 
@@ -35,18 +142,16 @@ for i = 10,0,-1 do
 end 
 
 astrabsslib.title = "AstraBSS"
-
 astrabsslib:Introduction()
 wait(1)
 local Init = astrabsslib:Init()
 
--- Uptimes
+-- Uptime Functions
 local function formatTime(seconds)
     local days = math.floor(seconds / 86400)
     local hours = math.floor((seconds % 86400) / 3600)
     local minutes = math.floor((seconds % 3600) / 60)
     local sec = math.floor(seconds % 60)
-    
     return string.format("%d Days, %02d:%02d:%02d", days, hours, minutes, sec)
 end
 
@@ -58,6 +163,7 @@ local function getPlayerUptime()
     return "🎮 Player Uptime: " .. formatTime(workspace.DistributedGameTime)
 end
 
+-- Home Tab
 local HomeTab = Init:NewTab("Home")
 local Information = HomeTab:NewSection("Information")
 local PlayerUptimeLabel = HomeTab:NewLabel(getPlayerUptime(), "left")
@@ -75,26 +181,20 @@ end)
 local emptysection = HomeTab:NewSection(" ")
 
 local stopall = HomeTab:NewToggle("Stop Everything", false, function(value)
-    stopAll = value
-    if debugmode then
-        if value then
-            print("✅ stopped everything")
-        else 
-            print("❌ started everything")
-        end
+    Config.stopAll = value
+    if Config.debugmode then
+        print(value and "✅ stopped everything" or "❌ started everything")
     end
 end)
 
--- Farming
-
--- Tool Remote Event
+-- Farming Functions
 local ToolCollectEvent = game:GetService("ReplicatedStorage").Events.ToolCollect
 local VirtualInputManager = game:GetService("VirtualInputManager")
 
 local function autoCollect()
-    autoCollecting = true  
-    while autoCollecting and not stopAll do
-        if useRemotes then  
+    Config.autoCollecting = true  
+    while Config.autoCollecting and not Config.stopAll do
+        if Config.useRemotes then  
             ToolCollectEvent:FireServer()
         else  
             VirtualInputManager:SendMouseButtonEvent(0, 0, 0, true, game, 0) 
@@ -105,217 +205,142 @@ local function autoCollect()
     end
 end
 
+-- Farming Tab
 local FarmingTab = Init:NewTab("Farming")
 local FarmingSection = FarmingTab:NewSection("Farming")
--- FIELD
 
 local ToggleAutoFarm = FarmingTab:NewToggle("Autofarm", false, function(value)
-    if value then
-
-    else
-        autofarming = false
-    end
-    if debugmode then
-        if value then
-            print("✅ AutoFarm activated")
-        else
-            print("❌ AutoFarm deactivated")
-        end
+    Config.autofarming = value
+    if Config.debugmode then
+        print(value and "✅ AutoFarm activated" or "❌ AutoFarm deactivated")
     end
 end)
--- Toggle für AutoCollect
+
 local ToggleAutoDig = FarmingTab:NewToggle("Auto Dig", false, function(value)
     if value then
         autoCollect()  
     else
-        autoCollecting = false  
+        Config.autoCollecting = false  
     end
-    if debugmode then
-        if value then
-            print("✅ AutoDig activated")
-        else
-            print("❌ AutoDig deactivated")
-        end
+    if Config.debugmode then
+        print(value and "✅ AutoDig activated" or "❌ AutoDig deactivated")
     end
 end)
 
--- Misc TAB
+-- Misc Tab
 local MiscTab = Init:NewTab("Misc")
 local MiscSection = MiscTab:NewSection("Misc")
 
--- Auto Quest
-
--- Auto Planters
-
--- Items
-
--- Misc
-
--- Hive
-
--- webhook function
-local webhookURL = "https://discord.com/api/webhooks/1329436163093692467/mtVp0o82K2i5OuMhHBbD2ZrnFHgxT4uI70cMh-dIBs8AlTyADzopX2ustcZCO6ulqAyM"
-local function sendWebhook()
-    if not useWebhooks then return end
-    if not honeyStat then return end
-
-    local currentHoney = honeyStat.Value
-    local sessionHoney = currentHoney - startHoney
-
-    local data = {
-        ["embeds"] = {{
-            ["title"] = "🐝 **Honey Update**",
-            ["description"] = "new data available!",
-            ["color"] = 16776960, -- Gelb
-            ["fields"] = {
-                {["name"] = "🍯 Current Honey", ["value"] = tostring(currentHoney), ["inline"] = true},
-                {["name"] = "📊 Session Honey", ["value"] = tostring(sessionHoney), ["inline"] = true}
-            },
-            ["footer"] = {
-                ["text"] = "AstraBSS | Webhook System"
-            },
-            ["timestamp"] = os.date("!%Y-%m-%dT%H:%M:%SZ")
-        }}
-    }
-
-    local jsonData = http:JSONEncode(data)
-
-    local success, err = pcall(function()
-        http:PostAsync(webhookURL, jsonData, Enum.HttpContentType.ApplicationJson)
-    end)
-
-    if success then
-        print("✅ Webhook erfolgreich gesendet!")
-    else
-        warn("❌ Fehler beim Senden des Webhooks: " .. err)
-    end
-end
-
-task.spawn(function()
-    while true do
-        if useWebhooks then
-            sendWebhook()
-        end
-        wait(webhookinterval)
-    end
-end)
-
--- Webhook
+-- Webhook Tab
 local WebhookTab = Init:NewTab("Webhook")
 local WebhookSection = WebhookTab:NewSection("Webhook")
 
 local ToggleWebhook = WebhookTab:NewToggle("Enable Webhook", false, function(value)
-    useWebhooks = value
-    if debugmode then
-        if value then
-            print("✅ Webhook activated")
-        else
-            print("❌ Webhook deactivated")
-        end
+    WebhookConfig.enabled = value
+    if Config.debugmode then
+        print(value and "✅ Webhook activated" or "❌ Webhook deactivated")
     end
 end)
 
 local WebhookSlide = WebhookTab:NewSlider("Webhook Interval", "", true, "/", {min = 1, max = 60, default = 20}, function(value)
-    webhookinterval = value
-    -- comming soon
+    WebhookConfig.interval = value
 end)
 
 local WebHookSettings = WebhookTab:NewSection("Webhook Settings")
 
 local SendBallonPolls = WebhookTab:NewToggle("Send Balloon Pollen", false, function(value)
-    sendballonpollss = value
-    -- comming soon
+    WebhookConfig.settings.sendBalloonPollen = value
 end)
+
 local SendNectars = WebhookTab:NewToggle("Send Nectars", false, function(value)
-    sendnectarss = value
-    -- comming soon
+    WebhookConfig.settings.sendNectars = value
 end)
+
 local SendPlanters = WebhookTab:NewToggle("Send Planters", false, function(value)
-    sendplanterss = value
-    -- comming soon
+    WebhookConfig.settings.sendPlanters = value
 end)
+
 local SendItems = WebhookTab:NewToggle("Send Items", false, function(value)
-    senditemss = value
-    -- comming soon
+    WebhookConfig.settings.sendItems = value
 end)
+
 local SendQuests = WebhookTab:NewToggle("Send Quests Done", false, function(value)
-    sendquestss = value
-    -- comming soon
+    WebhookConfig.settings.sendQuests = value
 end)
+
 local SendDisconnect = WebhookTab:NewToggle("Send Disconnect", false, function(value)
-    senddisconnectt = value
-    -- comming soon
+    WebhookConfig.settings.sendDisconnect = value
 end)
 
--- Config
-
+-- Config Tab
 local ConfigTab = Init:NewTab("Config")
 local ConfigSection = ConfigTab:NewSection("Configuration")
 
 local ToggleRemotes = ConfigTab:NewToggle("Use Remotes", false, function(value)
-    useRemotes = value  
-    if debugmode then
-        if value then
-            print("✅ Remotes activated")
-        else
-            print("❌ Remotes deactivated")
-        end
+    Config.useRemotes = value
+    if Config.debugmode then
+        print(value and "✅ Remotes activated" or "❌ Remotes deactivated")
     end
 end)
--- walk speed
+
+-- Movement Section
 local MovementSection = ConfigTab:NewSection("Movement")
 local ToggleWalkspeed = ConfigTab:NewToggle("Walkspeed Hack", false, function(value)
-    walkspeedEnabled = value
+    Config.walkspeedEnabled = value
     if value then
-        game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = defaultWalkspeed  
+        game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = Config.defaultWalkspeed
     else
-        game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 16  
+        game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 16
     end
-    if debugmode then
-        if value then
-            print("✅ Walkspeed Hack aktiviert")
-        else
-            print("❌ Walkspeed Hack deaktiviert")
-        end
+    if Config.debugmode then
+        print(value and "✅ Walkspeed Hack activated" or "❌ Walkspeed Hack deactivated")
     end
 end)
 
 local WalkspeedSlide = ConfigTab:NewSlider("Walkspeed", "", true, "/", {min = 30, max = 100, default = 60}, function(value)
-    defaultWalkspeed = value
-    if walkspeedEnabled then  
+    Config.defaultWalkspeed = value
+    if Config.walkspeedEnabled then
         game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = value
-        if debugmode then
+        if Config.debugmode then
             print("Walkspeed: " .. value)
         end
     end
 end)
 
 local TweenSpeedSlide = ConfigTab:NewSlider("TweenSpeed", "", true, "/", {min = 1, max = 10, default = 6}, function(value)
-    print(value)
-end)
-
-local SettingsSection = ConfigTab:NewSection("Settings")
-
-local Toggledebug = ConfigTab:NewToggle("Debug Logs", false, function(value)
-    debugmode = value  
-    if debugmode then
-        if value then
-            print("✅ Debug Logs activated")
-        else
-            print("❌ Debug Logs deactivated")
-        end
+    if Config.debugmode then
+        print("TweenSpeed: " .. value)
     end
 end)
 
--- UI 
+-- Settings Section
+local SettingsSection = ConfigTab:NewSection("Settings")
 
+local Toggledebug = ConfigTab:NewToggle("Debug Logs", false, function(value)
+    Config.debugmode = value
+    if Config.debugmode then
+        print(value and "✅ Debug Logs activated" or "❌ Debug Logs deactivated")
+    end
+end)
+
+-- UI Tab
 local UITab = Init:NewTab("UI")
 local UISection = UITab:NewSection("UI Settings")
 
 local Keybind1 = UITab:NewKeybind("UI Key", Enum.KeyCode.RightAlt, function(key)
     Init:UpdateKeybind(Enum.KeyCode[key])
-    if debugmode then
+    if Config.debugmode then
         print("UI Key Toggled")
+    end
+end)
+
+-- Start Webhook Loop
+task.spawn(function()
+    while true do
+        if WebhookConfig.enabled then
+            sendWebhook()
+        end
+        task.wait(WebhookConfig.interval)
     end
 end)
 

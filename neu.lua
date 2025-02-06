@@ -20,7 +20,7 @@ local Config = {
     destroydecorations = false,
     rendering = false,
     transparent = false,
-    hideothers = false, 
+    hideothers = false,
     antilag = false,
     url = "",
     enabled = false,
@@ -398,6 +398,7 @@ local SettingsSection = ConfigTab:NewSection("Settings")
 
 local SaveConfig = ConfigTab:NewButton("Save Config", function()
     ConfigSaver:SaveConfig("Astra/Config.json", Config)
+    print("button gedrückt")
 end)
 
 -- Debug Tab

@@ -1,8 +1,8 @@
 local library = loadstring(game:HttpGet("https://raw.githubusercontent.com/Consistt/Ui/main/UnLeaked"))()
 
 
-library.rank = "developer"
-local Wm = library:Watermark("xsx example | v" .. library.version ..  " | " .. library:GetUsername() .. " | rank: " .. library.rank)
+library.rank = "Premium"
+local Wm = library:Watermark("AstraBSS | v" .. library.version ..  " | " .. library:GetUsername() .. " | rank: " .. library.rank)
 local FpsWm = Wm:AddWatermark("fps: " .. library.fps)
 coroutine.wrap(function()
     while wait(.75) do
@@ -15,74 +15,40 @@ local Notif = library:InitNotifications()
 
 for i = 20,0,-1 do 
     task.wait(0.05)
-    local LoadingXSX = Notif:Notify("Loading xsx lib v2, please be patient.", 3, "information") -- notification, alert, error, success, information
+    local LoadingXSX = Notif:Notify("Loading Astra V1, please be patient.", 3, "information")
 end 
 
-library.title = "Vigil"
+library.title = "AstraBSS"
 
 library:Introduction()
 wait(1)
 local Init = library:Init()
 
-local Tab1 = Init:NewTab("Example tab")
 
-local Section1 = Tab1:NewSection("Example Components")
+-- HOME TAB
+local Home = Init:NewTab("Home")
+local Information = Home:NewSection("Information")
+local Label1 = Home:NewLabel("v0.0.1: NEW UI Loader", "left")
 
-
-local Label1 = Tab1:NewLabel("Example label", "left")--"left", "center", "right"
-
-local Toggle1 = Tab1:NewToggle("Example toggle", false, function(value)
-    local vers = value and "on" or "off"
-    print("one " .. vers)
-end):AddKeybind(Enum.KeyCode.RightControl)
-
-local Toggle2 = Tab1:NewToggle("Toggle", false, function(value)
+local stopall = Home:NewToggle("Stop Everything", false, function(value)
     local vers = value and "on" or "off"
     print("two " .. vers)
 end):AddKeybind(Enum.KeyCode.LeftControl)
 
-local Button1 = Tab1:NewButton("Button", function()
-    print("one")
-end)
-
-local Keybind1 = Tab1:NewKeybind("Keybind 1", Enum.KeyCode.RightAlt, function(key)
+local Keybind1 = Home:NewKeybind("UI Key", Enum.KeyCode.RightAlt, function(key)
     Init:UpdateKeybind(Enum.KeyCode[key])
 end)
 
-local Textbox1 = Tab1:NewTextbox("Text box 1 [auto scales // small]", "", "1", "all", "small", true, false, function(val)
-    print(val)
-end)
-
-local Textbox2 = Tab1:NewTextbox("Text box 2 [medium]", "", "2", "all", "medium", true, false, function(val)
-    print(val)
-end)
-
-local Textbox3 = Tab1:NewTextbox("Text box 3 [large]", "", "3", "all", "large", true, false, function(val)
-    print(val)
-end)
-
-local Selector1 = Tab1:NewSelector("Selector 1", "bungie", {"fg", "fge", "fg", "fg"}, function(d)
-    print(d)
-end):AddOption("fge")
-
-local Slider1 = Tab1:NewSlider("Slider 1", "", true, "/", {min = 1, max = 100, default = 20}, function(value)
+local WalkspeedSlide = Home:NewSlider("Walkspeed", "", true, "/", {min = 1, max = 100, default = 20}, function(value)
     print(value)
 end)
 
+-- Misc TAB
+local Misc = Init:NewTab("Misc")
+local MiscSection = Misc:NewSection("Misc")
+local MiscLabel = Misc:NewLabel("Misc Test")
 
-
-
-
-
-
-
-
-
-
-
-
-
-local FinishedLoading = Notif:Notify("Loaded xsx example", 4, "success")
+local FinishedLoading = Notif:Notify("Loaded AstraBSS", 4, "success")
 
 -- // FUNCTION DOCS: 
 --[[
@@ -139,23 +105,23 @@ local FinishedLoading = Notif:Notify("Loaded xsx example", 4, "success")
 
     __________________________
 
-    -- // local Tab1 = Init:NewTab(text: string)
+    -- // local Home = Init:NewTab(text: string)
 
     -- [tab title contains rich text]
 
-    -- / Tab1:Open()
+    -- / Home:Open()
     -- opens the tab you want
 
-    -- / Tab1:Remove()
+    -- / Home:Remove()
     -- destroys the tab
 
-    -- / Tab1:Hide()
+    -- / Home:Hide()
     -- hides the tab from eye view
 
-    -- / Tab1:Show()
+    -- / Home:Show()
     -- makes the tab visible on the selection table
 
-    -- / Tab1:Text("new")
+    -- / Home:Text("new")
     -- sets the tab's text to something new
 
     __________________________

@@ -1,6 +1,8 @@
 local astrabsslib = loadstring(game:HttpGet("https://raw.githubusercontent.com/BLNDaniel/astra-bss/refs/heads/main/Astra%20Lib%20Src.lua"))()
 local useRemotes = false
 local autoCollecting = false 
+local walkspeedon = false
+local stopAll = false
 
 astrabsslib.rank = "Premium"
 local Wm = astrabsslib:Watermark("AstraBSS | v" .. astrabsslib.version ..  " | " .. astrabsslib:GetUsername() .. " | rank: " .. astrabsslib.rank)
@@ -31,7 +33,7 @@ local Information = HomeTab:NewSection("Information")
 local Label1 = HomeTab:NewLabel("v0.0.1: NEW UI Loader", "left")
 
 local stopall = HomeTab:NewToggle("Stop Everything", false, function(value)
-    local vers = value and "on" or "off"
+    stopAll = value
     if debugmode then
        print(value and "✅ Everything stopped" or "❌ everything started") 
     end
@@ -41,13 +43,6 @@ end)
 local MiscTab = Init:NewTab("Misc")
 local MiscSection = MiscTab:NewSection("Misc")
 
-local ToggleNoclip = MiscTab:NewToggle("Noclip", false, function(value)
-    --SetCollisionGroup(value)
-    if debugmode then
-    print(value and "✅ Noclip activated" or "❌ Noclip deactivated")
-    end
-end):AddKeybind(Enum.KeyCode.N)
-
 local ToggleRemotes = MiscTab:NewToggle("Use Remotes", false, function(value)
     useRemotes = value  
     if debugmode then
@@ -56,14 +51,22 @@ local ToggleRemotes = MiscTab:NewToggle("Use Remotes", false, function(value)
 end)
 
 local ToggleWalkspeed = MiscTab:NewToggle("Walkspeed Hack", false, function(value)
+    walkspeedEnabled = value
     if debugmode then
-        print(useRemotes and "✅ Use Remotes activated" or "❌ Use Remotes deactivated")
+        print(value and "✅ Walkspeed Hack activated" or "❌ Walkspeed Hack deactivated")
     end
 end)
 
+if walkspeedEnabled then
 local WalkspeedSlide = MiscTab:NewSlider("Walkspeed", "", true, "/", {min = 1, max = 100, default = 60}, function(value)
-    print(value)
+    if walkspeedEnabled then  
+        game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = value
+        if debugmode then
+            print("Walkspeed: " .. value)
+        end
+    end
 end)
+end
 
 local TweenSpeedSlide = MiscTab:NewSlider("TweenSpeed", "", true, "/", {min = 1, max = 10, default = 6}, function(value)
     print(value)
@@ -77,7 +80,7 @@ local VirtualInputManager = game:GetService("VirtualInputManager")
 
 local function autoCollect()
     autoCollecting = true  
-    while autoCollecting do
+    while autoCollecting and not stopAll do
         if useRemotes then  
             ToolCollectEvent:FireServer()
         else  
@@ -85,19 +88,19 @@ local function autoCollect()
             wait(0.1)
             VirtualInputManager:SendMouseButtonEvent(0, 0, 0, false, game, 0)
         end
-        wait(1) 
+        wait(3) 
     end
 end
 
 local FarmingTab = Init:NewTab("Farming")
 local FarmingSection = FarmingTab:NewSection("AutoFarm")
 -- Toggle für AutoCollect
-local ToggleAutoCollect = MiscTab:NewToggle("Auto Collect", false, function(value)
+local ToggleAutoCollect = FarmingTab:NewToggle("Auto Dig", false, function(value)
     if value then
-        autoCollect()  -- Auto-Collect starten
+        autoCollect()  
     else
-        autoCollecting = false  -- Stoppen (Schleife endet beim nächsten Durchlauf)
-        print("❌ Auto Collect deaktiviert")
+        autoCollecting = false  
+        print("❌ Auto Dig deactivated")
     end
 end)
 

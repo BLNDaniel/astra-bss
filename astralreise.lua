@@ -61,6 +61,28 @@ local TweenSpeedSlide = MiscTab:NewSlider("TweenSpeed", "", true, "/", {min = 1,
 end)
 
 -- Farming
+local ToolCollectEvent = game:GetService("ReplicatedStorage").Events.ToolCollect
+
+local function autoCollect()
+    while true do
+        ToolCollectEvent:FireServer()
+        wait(1) 
+    end
+end
+
+local FarmingTab = Init:NewTab("Farming")
+local FarmingSection = FarmingTab:NewSection("AutoFarm")
+-- Toggle für AutoCollect
+local ToggleAutoCollect = FarmingTab:NewToggle("Auto Collect", false, function(value)
+    if value then
+        -- Wenn AutoCollect aktiviert wird, starte das Sammeln
+        autoCollect()
+    else
+        -- Stoppe das Sammeln (Indem du die Schleife stoppst)
+        print("Auto Collect deaktiviert")
+    end
+end)
+
 
 -- Combat
 

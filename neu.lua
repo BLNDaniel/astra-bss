@@ -1,6 +1,6 @@
 -- Made by DannyGG with <3
 local astrabsslib = loadstring(game:HttpGet("https://raw.githubusercontent.com/BLNDaniel/astra-bss/refs/heads/main/Astra%20Lib%20Src.lua"))()
-local ConfigSaver = loadstring(game:HttpGet("https://raw.githubusercontent.com/Exunys/Config-Library/main/Main.lua"))()
+local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/Exunys/Config-Library/main/Main.lua"))()
 
 local Config = {
     useRemotes = false,
@@ -397,7 +397,7 @@ end)
 local SettingsSection = ConfigTab:NewSection("Settings")
 
 local SaveConfig = ConfigTab:NewButton("Save Config", function()
-    ConfigSaver:SaveConfig("Astra/Config.json", Config)
+    Library:SaveConfig("Astra/Config.json", Config)
     print("button gedrückt")
 end)
 

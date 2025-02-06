@@ -1,8 +1,10 @@
+-- Made by DannyGG with <3
 local astrabsslib = loadstring(game:HttpGet("https://raw.githubusercontent.com/BLNDaniel/astra-bss/refs/heads/main/Astra%20Lib%20Src.lua"))()
 local useRemotes = false
 local autoCollecting = false 
-local walkspeedon = false
 local stopAll = false
+local walkspeedEnabled = false  
+local defaultWalkspeed = 60
 
 astrabsslib.rank = "Premium"
 local Wm = astrabsslib:Watermark("AstraBSS | v" .. astrabsslib.version ..  " | " .. astrabsslib:GetUsername() .. " | rank: " .. astrabsslib.rank)
@@ -52,12 +54,18 @@ end)
 
 local ToggleWalkspeed = MiscTab:NewToggle("Walkspeed Hack", false, function(value)
     walkspeedEnabled = value
+    if value then
+        game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = defaultWalkspeed  
+    else
+        game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 16  
+    end
     if debugmode then
-        print(value and "✅ Walkspeed Hack activated" or "❌ Walkspeed Hack deactivated")
+        print(value and "✅ Walkspeed Hack aktiviert" or "❌ Walkspeed Hack deaktiviert")
     end
 end)
 
-local WalkspeedSlide = MiscTab:NewSlider("Walkspeed", "", true, "/", {min = 1, max = 100, default = 60}, function(value)
+local WalkspeedSlide = MiscTab:NewSlider("Walkspeed", "", true, "/", {min = 30, max = 100, default = 60}, function(value)
+    defaultWalkspeed = value
     if walkspeedEnabled then  
         game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = value
         if debugmode then

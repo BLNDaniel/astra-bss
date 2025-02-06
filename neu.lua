@@ -31,49 +31,52 @@ local WebhookConfig = {
 local http = game:GetService("HttpService")
 local player = game.Players.LocalPlayer
 
--- Stats
-local pollenStat = player:FindFirstChild("Pollen")
-local honeyStat = player:FindFirstChild("Honey")
-local capacityStat = player:FindFirstChild("Capacity")
-local startHoney = honeyStat and honeyStat.Value or 0
-local clientStartTime = tick()
-
--- 🕵️ Scannt nach möglichen Inventardaten und anderen Variablen des Spielers
-local player = game.Players.LocalPlayer
-local scanInterval = 2  -- Intervall in Sekunden, wie oft gescannt wird
-
-local function scanForData()
-    -- Durchsucht alle Kinder des Players nach relevanten Daten
+-- Improved Stats Functions
+local function findValue(name)
     for _, v in pairs(player:GetChildren()) do
         if v:IsA("Folder") or v:IsA("Model") then
-            -- Wenn das Objekt ein Folder oder Model ist, durchsuchen wir weiter
             for _, data in pairs(v:GetChildren()) do
-                if data:IsA("IntValue") or data:IsA("NumberValue") then
-                    -- Wenn das Objekt ein IntValue oder NumberValue ist, könnten es relevante Daten sein
-                    print("[📦] Found: " .. data.Name .. " = " .. data.Value)
+                if (data:IsA("IntValue") or data:IsA("NumberValue")) and data.Name == name then
+                    return data
                 end
             end
+        end
+    end
+    return nil
+end
+
+local function getStats()
+    local honey = findValue("Honey")
+    local pollen = findValue("Pollen")
+    local capacity = findValue("Capacity")
+    
+    if Config.debugmode then
+        if honey then
+            print("[📦] Found Honey: " .. honey.Value)
+        else
+            print("[❌] Honey nicht gefunden!")
+        end
+        
+        if pollen then
+            print("[📦] Found Pollen: " .. pollen.Value)
+        end
+        
+        if capacity then
+            print("[📦] Found Capacity: " .. capacity.Value)
         end
     end
     
-    -- Hier kannst du auch durch die Workspace-Objekte oder andere Bereiche scannen
-    for _, obj in pairs(game:GetService("Workspace"):GetChildren()) do
-        if obj:IsA("Model") or obj:IsA("Part") then
-            -- Wenn es ein Model oder Part ist, schau nach relevanten Werten
-            for _, child in pairs(obj:GetChildren()) do
-                if child:IsA("IntValue") or child:IsA("NumberValue") then
-                    print("[🔍] Found in Workspace: " .. child.Name .. " = " .. child.Value)
-                end
-            end
-        end
-    end
+    return {
+        honey = honey,
+        pollen = pollen,
+        capacity = capacity
+    }
 end
 
--- Durchsucht alle 2 Sekunden
-while wait(scanInterval) do
-    scanForData()
-end
-
+-- Initialize starting values
+local startStats = getStats()
+local startHoney = startStats.honey and startStats.honey.Value or 0
+local clientStartTime = tick()
 
 -- Webhook Functions
 local function formatNumber(number)
@@ -94,12 +97,14 @@ end
 
 local function sendWebhook()
     if not WebhookConfig.enabled then return end
-    if not honeyStat then 
-        warn("❌ Cannot send webhook: Honey stat not found")
+    
+    local currentStats = getStats()
+    if not currentStats.honey then 
+        warn("[❌] Cannot send webhook: Honey stat not found")
         return 
     end
 
-    local currentHoney = honeyStat.Value
+    local currentHoney = currentStats.honey.Value
     local sessionHoney = currentHoney - startHoney
     local honeyPerHour = calculateHoneyPerHour(sessionHoney, clientStartTime)
     
@@ -121,18 +126,18 @@ local function sendWebhook()
         }
     }
 
-    if WebhookConfig.settings.sendBalloonPollen and pollenStat then
+    if WebhookConfig.settings.sendBalloonPollen and currentStats.pollen then
         table.insert(fields, {
             ["name"] = "🎈 Current Pollen",
-            ["value"] = formatNumber(pollenStat.Value),
+            ["value"] = formatNumber(currentStats.pollen.Value),
             ["inline"] = true
         })
     end
 
-    if capacityStat then
+    if currentStats.capacity then
         table.insert(fields, {
             ["name"] = "💼 Capacity",
-            ["value"] = formatNumber(capacityStat.Value),
+            ["value"] = formatNumber(currentStats.capacity.Value),
             ["inline"] = true
         })
     end
@@ -155,9 +160,9 @@ local function sendWebhook()
     end)
 
     if success and Config.debugmode then
-        print("✅ Webhook sent successfully!")
+        print("[✅] Webhook sent successfully!")
     elseif not success then
-        warn("❌ Failed to send webhook: " .. tostring(err))
+        warn("[❌] Failed to send webhook: " .. tostring(err))
     end
 end
 

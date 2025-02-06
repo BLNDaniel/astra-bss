@@ -1,4 +1,4 @@
-local astrabsslib = loadstring(game:HttpGet("https://raw.githubusercontent.com/Consistt/Ui/main/UnLeaked"))()
+local astrabsslib = loadstring(game:HttpGet("https://raw.githubusercontent.com/BLNDaniel/astra-bss/refs/heads/main/Astra%20Lib%20Src.lua"))()
 
 astrabsslib.rank = "Premium"
 local Wm = astrabsslib:Watermark("AstraBSS | v" .. astrabsslib.version ..  " | " .. astrabsslib:GetUsername() .. " | rank: " .. astrabsslib.rank)
@@ -14,7 +14,7 @@ local Notif = astrabsslib:InitNotifications()
 
 for i = 10,0,-1 do 
     task.wait(0.05)
-    local LoadingXSX = Notif:Notify("Loading Astra V1, please be patient.", 3, "information")
+    local LoadingASTRA = Notif:Notify("Loading Astra V1, please be patient.", 3, "information")
 end 
 
 astrabsslib.title = "AstraBSS"

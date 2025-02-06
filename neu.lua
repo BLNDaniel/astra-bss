@@ -6,7 +6,7 @@ local stopAll = false
 local walkspeedEnabled = false  
 local useWebhooks = false
 local defaultWalkspeed = 60
-local playerStartTime = tick()  
+local clientStartTime = tick()
 
 astrabsslib.rank = "Premium"
 local Wm = astrabsslib:Watermark("AstraBSS | v" .. astrabsslib.version ..  " | " .. astrabsslib:GetUsername() .. " | rank: " .. astrabsslib.rank)
@@ -33,20 +33,21 @@ local Init = astrabsslib:Init()
 
 -- Uptimes
 local function formatTime(seconds)
-    local hours = math.floor(seconds / 3600)
+    local days = math.floor(seconds / 86400)
+    local hours = math.floor((seconds % 86400) / 3600)
     local minutes = math.floor((seconds % 3600) / 60)
     local sec = math.floor(seconds % 60)
-    return string.format("%02d:%02d:%02d", hours, minutes, sec)
+    
+    return string.format("%d Tage, %02d:%02d:%02d", days, hours, minutes, sec)
 end
 
 local function getServerUptime()
-    local serverStartTime = game:GetService("Stats").ServerTime or tick()
-    local uptime = tick() - serverStartTime  
+    local uptime = game:GetService("Workspace"):GetServerTimeNow()
     return "⏳ Server Uptime: " .. formatTime(uptime)
 end
 
 local function getPlayerUptime()
-    local uptime = tick() - playerStartTime
+    local uptime = tick() - clientStartTime
     return "🎮 Player Uptime: " .. formatTime(uptime)
 end
 

@@ -194,7 +194,6 @@ local function sendWebhook()
         }}
     }
 
-    -- Use PostAsync instead of RequestAsync
     local success, err = pcall(function()
         local jsonData = game:GetService("HttpService"):JSONEncode(data)
         game:GetService("HttpService"):PostAsync(Config.url, jsonData, Enum.HttpContentType.ApplicationJson)

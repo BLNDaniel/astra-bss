@@ -54,7 +54,6 @@ local Information = HomeTab:NewSection("Information")
 local PlayerUptimeLabel = HomeTab:NewLabel(getPlayerUptime(), "left")
 local emptylabel = HomeTab:NewLabel(" ")
 local ServerUptimeLabel = HomeTab:NewLabel(getServerUptime(), "left")
-local Label1 = HomeTab:NewLabel("v0.0.1: NEW UI Loader", "left")
 
 task.spawn(function()
     while true do
@@ -72,10 +71,6 @@ local stopall = HomeTab:NewToggle("Stop Everything", false, function(value)
        print(value and "✅ Everything stopped" or "❌ everything started") 
     end
 end)
-
--- Misc TAB
-local MiscTab = Init:NewTab("Misc")
-local MiscSection = MiscTab:NewSection("Misc")
 
 -- Farming
 
@@ -109,8 +104,13 @@ local ToggleAutoCollect = FarmingTab:NewToggle("Auto Dig", false, function(value
     end
 end)
 
-
 -- Combat
+local CombatTab = Init:NewTab("Combat")
+local CombatSection = MiscTab:NewSection("Combat")
+
+-- Misc TAB
+local MiscTab = Init:NewTab("Misc")
+local MiscSection = MiscTab:NewSection("Misc")
 
 -- Auto Quest
 

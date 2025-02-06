@@ -4,6 +4,7 @@ local useRemotes = false
 local autoCollecting = false 
 local stopAll = false
 local walkspeedEnabled = false  
+local useWebhooks = false
 local defaultWalkspeed = 60
 
 astrabsslib.rank = "Premium"
@@ -89,6 +90,47 @@ end)
 -- Misc
 
 -- Hive
+
+-- Webhook
+local WebhookTab = Init:NewTab("Webhook")
+local WebhookSection = WebhookTab:NewSection("Webhook")
+
+local ToggleWebhook = WebhookTab:NewToggle("Enable Webhook", false, function(value)
+    useWebhooks = value
+    -- comming soon
+end)
+
+local WebhookSlide = WebhookTab:NewSlider("Webhook Interval", "", true, "/", {min = 1, max = 60, default = 20}, function(value)
+    webhookinterval = value
+    -- comming soon
+end)
+
+local WebHookSettings = WebhookTab:NewSection("Webhook Settings")
+
+local SendBallonPolls = WebhookTab:NewToggle("Send Balloon Pollen", false, function(value)
+    sendballonpollss = value
+    -- comming soon
+end)
+local SendNectars = WebhookTab:NewToggle("Send Nectars", false, function(value)
+    sendnectarss = value
+    -- comming soon
+end)
+local SendPlanters = WebhookTab:NewToggle("Send Planters", false, function(value)
+    sendplanterss = value
+    -- comming soon
+end)
+local SendItems = WebhookTab:NewToggle("Send Items", false, function(value)
+    senditemss = value
+    -- comming soon
+end)
+local SendQuests = WebhookTab:NewToggle("Send Quests Done", false, function(value)
+    sendquestss = value
+    -- comming soon
+end)
+local SendDisconnect = WebhookTab:NewToggle("Send Disconnect", false, function(value)
+    senddisconnectt = value
+    -- comming soon
+end)
 
 -- Config
 

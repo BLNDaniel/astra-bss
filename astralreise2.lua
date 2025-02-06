@@ -1,4 +1,6 @@
 local astrabsslib = loadstring(game:HttpGet("https://raw.githubusercontent.com/BLNDaniel/astra-bss/refs/heads/main/Astra%20Lib%20Src.lua"))()
+local useRemotes = false
+local autoCollecting = false 
 
 astrabsslib.rank = "Premium"
 local Wm = astrabsslib:Watermark("AstraBSS | v" .. astrabsslib.version ..  " | " .. astrabsslib:GetUsername() .. " | rank: " .. astrabsslib.rank)
@@ -46,9 +48,16 @@ local ToggleNoclip = MiscTab:NewToggle("Noclip", false, function(value)
     end
 end):AddKeybind(Enum.KeyCode.N)
 
+local ToggleRemotes = MiscTab:NewToggle("Use Remotes", false, function(value)
+    useRemotes = value  
+    if debugmode then
+    print(value and "✅ Remotes activated" or "❌ Remotes deactivated")
+    end
+end)
+
 local ToggleWalkspeed = MiscTab:NewToggle("Walkspeed Hack", false, function(value)
     if debugmode then
-    print(value and "✅ Walkspeed activated" or "❌ Walkspeed deactivated")
+        print(useRemotes and "✅ Use Remotes activated" or "❌ Use Remotes deactivated")
     end
 end)
 
@@ -61,11 +70,21 @@ local TweenSpeedSlide = MiscTab:NewSlider("TweenSpeed", "", true, "/", {min = 1,
 end)
 
 -- Farming
+
+-- Tool Remote Event
 local ToolCollectEvent = game:GetService("ReplicatedStorage").Events.ToolCollect
+local VirtualInputManager = game:GetService("VirtualInputManager")
 
 local function autoCollect()
-    while true do
-        ToolCollectEvent:FireServer()
+    autoCollecting = true  
+    while autoCollecting do
+        if useRemotes then  
+            ToolCollectEvent:FireServer()
+        else  
+            VirtualInputManager:SendMouseButtonEvent(0, 0, 0, true, game, 0) 
+            wait(0.1)
+            VirtualInputManager:SendMouseButtonEvent(0, 0, 0, false, game, 0)
+        end
         wait(1) 
     end
 end
@@ -73,13 +92,12 @@ end
 local FarmingTab = Init:NewTab("Farming")
 local FarmingSection = FarmingTab:NewSection("AutoFarm")
 -- Toggle für AutoCollect
-local ToggleAutoCollect = FarmingTab:NewToggle("Auto Collect", false, function(value)
+local ToggleAutoCollect = MiscTab:NewToggle("Auto Collect", false, function(value)
     if value then
-        -- Wenn AutoCollect aktiviert wird, starte das Sammeln
-        autoCollect()
+        autoCollect()  -- Auto-Collect starten
     else
-        -- Stoppe das Sammeln (Indem du die Schleife stoppst)
-        print("Auto Collect deaktiviert")
+        autoCollecting = false  -- Stoppen (Schleife endet beim nächsten Durchlauf)
+        print("❌ Auto Collect deaktiviert")
     end
 end)
 

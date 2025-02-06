@@ -205,7 +205,6 @@ astrabsslib:Introduction()
 wait(1)
 local Init = astrabsslib:Init()
 
--- Uptime Functions
 local function formatTime(seconds)
     local days = math.floor(seconds / 86400)
     local hours = math.floor((seconds % 86400) / 3600)
@@ -323,6 +322,10 @@ end)
 
 local WebhookSlide = WebhookTab:NewSlider("Webhook Interval", "", true, "/", {min = 1, max = 60, default = 20}, function(value)
     WebhookConfig.interval = value
+end)
+
+local SendTest = WebhookTab:NewButton("Send Test", function()
+    sendWebhook()
 end)
 
 local WebHookSettings = WebhookTab:NewSection("Webhook Settings")

@@ -193,15 +193,10 @@ local function sendWebhook()
         }}
     }
 
+    -- Use PostAsync instead of RequestAsync
     local success, err = pcall(function()
-        game:GetService("HttpService"):RequestAsync({
-            Url = Config.url,
-            Method = "POST",
-            Headers = {
-                ["Content-Type"] = "application/json"
-            },
-            Body = game:GetService("HttpService"):JSONEncode(data)
-        })
+        local jsonData = game:GetService("HttpService"):JSONEncode(data)
+        game:GetService("HttpService"):PostAsync(Config.url, jsonData, Enum.HttpContentType.ApplicationJson)
     end)
     
     if success and Config.debugmode then
@@ -209,8 +204,8 @@ local function sendWebhook()
     elseif not success then
         warn("[❌] Failed to send webhook: " .. tostring(err))
     end
-    
 end
+
 
 -- UI Setup
 astrabsslib.rank = "Premium"

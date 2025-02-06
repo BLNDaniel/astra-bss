@@ -123,7 +123,7 @@ end)
 
 -- Combat
 local CombatTab = Init:NewTab("Combat")
-local CombatSection = MiscTab:NewSection("Combat")
+local CombatSection = CombatTab:NewSection("Combat")
 
 -- Misc TAB
 local MiscTab = Init:NewTab("Misc")

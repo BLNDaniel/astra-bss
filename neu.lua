@@ -45,39 +45,6 @@ end)
 local MiscTab = Init:NewTab("Misc")
 local MiscSection = MiscTab:NewSection("Misc")
 
-local ToggleRemotes = MiscTab:NewToggle("Use Remotes", false, function(value)
-    useRemotes = value  
-    if debugmode then
-    print(value and "✅ Remotes activated" or "❌ Remotes deactivated")
-    end
-end)
--- walk speed
-local ToggleWalkspeed = MiscTab:NewToggle("Walkspeed Hack", false, function(value)
-    walkspeedEnabled = value
-    if value then
-        game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = defaultWalkspeed  
-    else
-        game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 16  
-    end
-    if debugmode then
-        print(value and "✅ Walkspeed Hack aktiviert" or "❌ Walkspeed Hack deaktiviert")
-    end
-end)
-
-local WalkspeedSlide = MiscTab:NewSlider("Walkspeed", "", true, "/", {min = 30, max = 100, default = 60}, function(value)
-    defaultWalkspeed = value
-    if walkspeedEnabled then  
-        game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = value
-        if debugmode then
-            print("Walkspeed: " .. value)
-        end
-    end
-end)
-
-local TweenSpeedSlide = MiscTab:NewSlider("TweenSpeed", "", true, "/", {min = 1, max = 10, default = 6}, function(value)
-    print(value)
-end)
-
 -- Farming
 
 -- Tool Remote Event
@@ -127,6 +94,42 @@ end)
 
 local ConfigTab = Init:NewTab("Config")
 local ConfigSection = ConfigTab:NewSection("Configuration")
+
+local ToggleRemotes = ConfigTab:NewToggle("Use Remotes", false, function(value)
+    useRemotes = value  
+    if debugmode then
+    print(value and "✅ Remotes activated" or "❌ Remotes deactivated")
+    end
+end)
+-- walk speed
+local MovementSection = ConfigTab:NewSection("Movement")
+local ToggleWalkspeed = ConfigTab:NewToggle("Walkspeed Hack", false, function(value)
+    walkspeedEnabled = value
+    if value then
+        game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = defaultWalkspeed  
+    else
+        game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 16  
+    end
+    if debugmode then
+        print(value and "✅ Walkspeed Hack aktiviert" or "❌ Walkspeed Hack deaktiviert")
+    end
+end)
+
+local WalkspeedSlide = ConfigTab:NewSlider("Walkspeed", "", true, "/", {min = 30, max = 100, default = 60}, function(value)
+    defaultWalkspeed = value
+    if walkspeedEnabled then  
+        game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = value
+        if debugmode then
+            print("Walkspeed: " .. value)
+        end
+    end
+end)
+
+local TweenSpeedSlide = ConfigTab:NewSlider("TweenSpeed", "", true, "/", {min = 1, max = 10, default = 6}, function(value)
+    print(value)
+end)
+
+local SettingsSection = ConfigTab:NewSection("Settings")
 
 -- UI 
 

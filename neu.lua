@@ -51,7 +51,7 @@ local ToggleRemotes = MiscTab:NewToggle("Use Remotes", false, function(value)
     print(value and "✅ Remotes activated" or "❌ Remotes deactivated")
     end
 end)
-
+-- walk speed
 local ToggleWalkspeed = MiscTab:NewToggle("Walkspeed Hack", false, function(value)
     walkspeedEnabled = value
     if value then

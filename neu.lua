@@ -185,7 +185,7 @@ local function sendWebhook()
     }
 
     local success, err = pcall(function()
-        request({
+        game:GetService("HttpService"):RequestAsync({
             Url = Config.url,
             Method = "POST",
             Headers = {
@@ -194,12 +194,13 @@ local function sendWebhook()
             Body = game:GetService("HttpService"):JSONEncode(data)
         })
     end)
-
+    
     if success and Config.debugmode then
         print("[✅] Webhook sent successfully!")
     elseif not success then
         warn("[❌] Failed to send webhook: " .. tostring(err))
     end
+    
 end
 
 -- UI Setup

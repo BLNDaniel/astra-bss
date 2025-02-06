@@ -23,38 +23,6 @@ astrabsslib:Introduction()
 wait(1)
 local Init = astrabsslib:Init()
 
--- Functions
-
-local PhysicsService = game:GetService("PhysicsService")
-local Players = game:GetService("Players")
-local player = Players.LocalPlayer
-local character = player.Character or player.CharacterAdded:Wait()
-
--- Collision Group
-local groupName = "Astralreise"
-if not pcall(function() PhysicsService:CreateCollisionGroup(groupName) end) then
-    print("Collision Group existiert bereits.")
-end
-PhysicsService:CollisionGroupSetCollidable(groupName, groupName, false)
-
-local function SetCollisionGroup(state)
-    for _, part in pairs(character:GetChildren()) do
-        if part:IsA("BasePart") then
-            part.CollisionGroup = state and groupName or "Default"
-        end
-    end
-end
-
-player.CharacterAdded:Connect(function(newCharacter)
-    character = newCharacter
-    task.wait(1) 
-    if ToggleNoclip:GetState() then
-        SetCollisionGroup(true)
-    end
-end)
-
--- Functions END
-
 -- HOME TAB
 local HomeTab = Init:NewTab("Home")
 local Information = HomeTab:NewSection("Information")
@@ -70,7 +38,7 @@ local MiscTab = Init:NewTab("Misc")
 local MiscSection = MiscTab:NewSection("Misc")
 
 local ToggleNoclip = MiscTab:NewToggle("Noclip", false, function(value)
-    SetCollisionGroup(value)
+    --SetCollisionGroup(value)
     print(value and "✅ Noclip aktiviert" or "❌ Noclip deaktiviert")
 end):AddKeybind(Enum.KeyCode.N)
 

@@ -38,20 +38,21 @@ local function formatTime(seconds)
     local minutes = math.floor((seconds % 3600) / 60)
     local sec = math.floor(seconds % 60)
     
-    return string.format("%d Tage, %02d:%02d:%02d", days, hours, minutes, sec)
+    return string.format("%d Days, %02d:%02d:%02d", days, hours, minutes, sec)
 end
 
 local function getServerUptime()
-    return "⏳ Server Uptime: " .. formatTime(workspace.DistributedGameTime)
+    return "⏳ Server Uptime: idk bro stfu"
 end
 
 local function getPlayerUptime()
-    return "🎮 Player Uptime: " .. formatTime(tick() - clientStartTime)
+    return "🎮 Player Uptime: " .. formatTime(workspace.DistributedGameTime)
 end
 
 local HomeTab = Init:NewTab("Home")
 local Information = HomeTab:NewSection("Information")
 local PlayerUptimeLabel = HomeTab:NewLabel(getPlayerUptime(), "left")
+local emptylabel = HomeTab:NewLabel(" ")
 local ServerUptimeLabel = HomeTab:NewLabel(getServerUptime(), "left")
 local Label1 = HomeTab:NewLabel("v0.0.1: NEW UI Loader", "left")
 

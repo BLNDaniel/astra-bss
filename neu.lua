@@ -35,6 +35,8 @@ local Config = {
     }
 }
 
+Config = Library:LoadConfig("astra/config.json")
+
 local http = game:GetService("HttpService")
 local player = game.Players.LocalPlayer
 
@@ -397,8 +399,7 @@ end)
 local SettingsSection = ConfigTab:NewSection("Settings")
 
 local SaveConfig = ConfigTab:NewButton("Save Config", function()
-    Library:SaveConfig("Astra/Config.json", Config)
-    print("button gedrückt")
+    Library:SaveConfig("astra/config.json", Config)
 end)
 
 -- Debug Tab

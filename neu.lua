@@ -206,6 +206,13 @@ local WebhookSection = WebhookTab:NewSection("Webhook")
 
 local ToggleWebhook = WebhookTab:NewToggle("Enable Webhook", false, function(value)
     useWebhooks = value
+    if debugmode then
+        if value then
+            print("✅ Webhook activated")
+        else
+            print("❌ Webhook deactivated")
+        end
+    end
 end)
 
 local WebhookSlide = WebhookTab:NewSlider("Webhook Interval", "", true, "/", {min = 1, max = 60, default = 20}, function(value)

@@ -7,6 +7,8 @@ local walkspeedEnabled = false
 local useWebhooks = false
 local defaultWalkspeed = 60
 local clientStartTime = tick()
+local autofarming = false
+local debugmode = false
 
 astrabsslib.rank = "Premium"
 local Wm = astrabsslib:Watermark("AstraBSS | v" .. astrabsslib.version ..  " | " .. astrabsslib:GetUsername() .. " | rank: " .. astrabsslib.rank)
@@ -93,14 +95,29 @@ local function autoCollect()
 end
 
 local FarmingTab = Init:NewTab("Farming")
-local FarmingSection = FarmingTab:NewSection("AutoFarm")
+local FarmingSection = FarmingTab:NewSection("Farming")
+-- FIELD
+
+local ToggleAutoFarm = FarmingTab:NewToggle("Autofarm", false, function(value)
+    if value then
+
+    else
+        autofarming = false
+    end
+    if debugmode then
+        print(value and "✅ AutoFarm activated" or "❌ AutoFarm deactivated")
+    end
+end)
 -- Toggle für AutoCollect
-local ToggleAutoCollect = FarmingTab:NewToggle("Auto Dig", false, function(value)
+local ToggleAutoDig = FarmingTab:NewToggle("Auto Dig", false, function(value)
     if value then
         autoCollect()  
     else
         autoCollecting = false  
-        print("❌ Auto Dig deactivated")
+    end
+
+    if debugmode then
+        print(value and "✅ AutoDig activated" or "❌ AutoDig deactivated")
     end
 end)
 
@@ -203,6 +220,13 @@ local TweenSpeedSlide = ConfigTab:NewSlider("TweenSpeed", "", true, "/", {min = 
 end)
 
 local SettingsSection = ConfigTab:NewSection("Settings")
+
+local Toggledebug = ConfigTab:NewToggle("Debug Logs", false, function(value)
+    debugmode = value  
+    if debugmode then
+    print(value and "✅ Debug Logs activated" or "❌ Debug Logs deactivated")
+    end
+end)
 
 -- UI 
 

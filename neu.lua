@@ -355,7 +355,7 @@ local ToggleWebhook = WebhookTab:NewToggle("Enable Webhook", Config.enabled, fun
     end
 end)
 
-local WebhookLink = WebhookTab:NewTextbox("Webhook URL", "", "Webhook URL", "all", "small", true, false, function(val)
+local WebhookLink = WebhookTab:NewTextbox("Webhook URL", "", Config.url, "all", "small", true, false, function(val)
     Config.url = val
 end)
 

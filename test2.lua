@@ -18,6 +18,7 @@ local Config = {
     hideflowers = false,
     destroyballoons = false,
     destroytextures = false,
+    selectedField = "SunflowerField",
     destroydecorations = false,
     rendering = false,
     transparent = false,
@@ -36,23 +37,75 @@ local Config = {
     }
 }
 
-local fieldPositions = {
-    PineTreeForest = Vector3.new(-328.67, 65.5, -187.35), 
-    SunflowerField = Vector3.new(-208.951294, 1.5, 176.579224), 
-    CloverField = Vector3.new(), 
-    BlueFlowerField = Vector3.new(), 
-    MushroomField = Vector3.new(), 
-    StrawberryField = Vector3.new(), 
-    BambooField = Vector3.new(), 
-    SpiderField = Vector3.new(), 
-    CactusField = Vector3.new(), 
-    PumpkinPatch = Vector3.new(), 
-    RoseField = Vector3.new(), 
-    PineapplePatch = Vector3.new(), 
-    StumpField = Vector3.new(), 
-    CoconutField = Vector3.new(), 
-    PepperPatch = Vector3.new(), 
-    MountainTopField = Vector3.new()
+local fieldData = {
+    PineTreeForest = {
+        Position = Vector3.new(-328.67, 65.5, -187.35), 
+        Size = Vector3.new(90.62000274658203, 1, 121.5) 
+    },
+    SunflowerField = {
+        Position = Vector3.new(-208.951294, 1.5, 176.579224),
+        Size = Vector3.new(80.71003723144531, 1, 131.50999450683594)
+    },
+    CloverField = {
+        Position = Vector3.new(157.547073, 31.608448, 196.350006),
+        Size = Vector3.new(106.49425506591797, 2, 118.75)
+    },
+    BlueFlowerField = {
+        Position = Vector3.new(146.865021, 2.13494039, 99.3078308),
+        Size = Vector3.new(171.62998962402344, 2, 67.66536712646484)
+    },
+    MushroomField = {
+        Position = Vector3.new(-89.7000122, 1.95073581, 111.725006),
+        Size = Vector3.new(128.5, 2, 91.5)
+    },
+    StrawberryField = {
+        Position = Vector3.new(-178.174973, 18.1322384, -9.8549881),
+        Size = Vector3.new(89.64999389648438, 2, 106.29002380371094)
+    },
+    BambooField = {
+        Position = Vector3.new(132.963409, 18.1719551, -25.6000061),
+        Size = Vector3.new(156.4501190185547, 2, 74.79998779296875)
+    },
+    SpiderField = {
+        Position = Vector3.new(-43.4654312, 18.1220875, -13.5899963),
+        Size = Vector3.new(112.31002807617188, 2, 106.01997375488281)
+    },
+    CactusField = {
+        Position = Vector3.new(-188.5, 65.5000153, -101.595818),
+        Size = Vector3.new(135, 1, 68.80997467041016)
+    },
+    PumpkinPatch = {
+        Position = Vector3.new(-188.5, 65.5000153, -183.845093),
+        Size = Vector3.new(135, 1, 68.80997467041016)
+    },
+    RoseField = {
+        Position = Vector3.new(-327.459839, 17.5552464, 129.496735),
+        Size = Vector3.new(123.06999206542969, 1, 82.8600082397461)
+    },
+    PineapplePatch = {
+        Position = Vector3.new(256.498108, 66.1299973, -207.479324),
+        Size = Vector3.new(130.67312622070312, 2, 91.11000061035156)
+    },
+    StumpField = {
+        Position = Vector3.new(424.483276, 94.4255676, -174.810959),
+        Size = Vector3.new(110.47999572753906, 2.609133005142212, 113.31136322021484)
+    },
+    CoconutField = {
+        Position = Vector3.new(-254.478104, 68.9707947, 469.459045),
+        Size = Vector3.new(120.31002044677734, 1, 84.32997131347656)
+    },
+    PepperPatch = {
+        Position = Vector3.new(-488.761566, 120.701508, 535.680176),
+        Size = Vector3.new(82.3900375366211, 1, 110.54999542236328)
+    },
+    MountainTopField = {
+        Position = Vector3.new(77.6849823, 173.500015, -165.431),
+        Size = Vector3.new(97.72999572753906, 1, 110.82001495361328)
+    },
+    DandelionField = {
+        Position = Vector3.new(-29.6986389, 1.5, 221.572845),
+        Size = Vector3.new(143.65000915527344, 1, 72.5)
+    }
 }
 
 local hives = {
@@ -83,7 +136,7 @@ else
     print("No Config Found.")
 end
 
-local function safeMove(character, targetPosition, duration, isTeleport)
+local function safeMove(character, targetPosition, isTeleport)
     if not character or not character:IsA("Model") then
         warn("Ungültiger Charakter!")
         return
@@ -100,10 +153,8 @@ local function safeMove(character, targetPosition, duration, isTeleport)
         return
     end
 
-    if not duration or duration <= 0 then
-        warn("Ungültige Dauer!")
-        return
-    end
+    local speed = Config.defaultTweenSpeed 
+    local duration = 10 / speed 
 
     if isTeleport then
         hrp.CFrame = CFrame.new(targetPosition)
@@ -111,7 +162,6 @@ local function safeMove(character, targetPosition, duration, isTeleport)
     end
 
     local startPosition = hrp.Position
-    local distance = (targetPosition - startPosition).Magnitude
     local startTime = tick()
 
     while tick() - startTime < duration do
@@ -119,7 +169,6 @@ local function safeMove(character, targetPosition, duration, isTeleport)
         local alpha = math.clamp(elapsedTime / duration, 0, 1)  
 
         local newPosition = startPosition:Lerp(targetPosition, alpha)
-
         hrp.CFrame = CFrame.new(newPosition)
 
         wait(0.03)
@@ -373,14 +422,6 @@ astrabsslib:Introduction()
 wait(1)
 local Init = astrabsslib:Init()
 
-local function formatTime(seconds)
-    local days = math.floor(seconds / 86400)
-    local hours = math.floor((seconds % 86400) / 3600)
-    local minutes = math.floor((seconds % 3600) / 60)
-    local sec = math.floor(seconds % 60)
-    return string.format("%d Days, %02d:%02d:%02d", days, hours, minutes, sec)
-end
-
 local function getServerUptime()
     return "⏳ Server Uptime: idk bro stfu"
 end
@@ -431,16 +472,55 @@ local function autoCollect()
     end
 end
 
+local function autoFarm(fieldName)
+    if not Config.autofarming then return end  
+
+    local player = game.Players.LocalPlayer
+    local character = player and player.Character or player.CharacterAdded:Wait()
+    
+    if not fieldData[fieldName] then
+        warn("Feld nicht gefunden!")
+        return
+    end
+
+    local field = fieldData[fieldName]
+    local fieldPosition = field.Position
+    local fieldSize = field.Size
+
+    print("Fliege zu Feld: " .. fieldName)
+    safeMove(character, fieldPosition, false) 
+
+    wait(1)
+
+    while Config.autofarming and not Config.stopAll do
+        local randomX = math.random(-fieldSize.X/2, fieldSize.X/2)
+        local randomZ = math.random(-fieldSize.Z/2, fieldSize.Z/2)
+        local newPosition = fieldPosition + Vector3.new(randomX, 0, randomZ)
+
+        safeMove(character, newPosition, false) 
+        wait(math.random(1, 3)) 
+    end
+end
+
 -- Farming Tab
 local FarmingTab = Init:NewTab("Farming")
 local FarmingSection = FarmingTab:NewSection("Farming")
 
-local FieldSelector = FarmingTab:NewSelector("What Field Bro ?", "Selected Field", {"Sunflower Field", "Dandelion Field", "Mushroom Field", "Blue Flower Field", "Clover Field", "Strawberry Field", "Spider Field", "Bamboo Field", "Pineapple Patch", "Stump Field", "Cactus Field", "Pumpkin Patch", "Pine Tree Forest", "Rose Field", "Mountain Top Field", "Pepper Patch", "Coconut Field"}, function(d)
-    print(d)
+local FieldSelector = FarmingTab:NewSelector("Choose an Field", "Feld", {
+    "SunflowerField", "DandelionField", "MushroomField", "BlueFlowerField", "CloverField",
+    "StrawberryField", "SpiderField", "BambooField", "PineapplePatch", "StumpField",
+    "CactusField", "PumpkinPatch", "PineTreeForest", "RoseField", "MountainTopField",
+    "PepperPatch", "CoconutField"
+}, function(selected)
+    Config.selectedField = selected 
+    print("Feld changed: " .. Config.selectedField)
 end)
 
 local ToggleAutoFarm = FarmingTab:NewToggle("Autofarm", Config.autofarming, function(value)
     Config.autofarming = value
+    if value then
+        autoFarm(Config.selectedField)
+    end
     if Config.debugmode then
         print(value and "✅ AutoFarm activated" or "❌ AutoFarm deactivated")
     end
@@ -561,10 +641,12 @@ local WalkspeedSlide = ConfigTab:NewSlider("Walkspeed", "", true, "/", {min = 30
     end
 end)
 
-local TweenSpeedSlide = ConfigTab:NewSlider("TweenSpeed", "", true, "/", {min = 1, max = 10, default = Config.defaultTweenSpeed}, function(value)
-    Config.defaultTweenSpeed = value
-    -- tween speed
-end)
+local TweenSpeedSlide = ConfigTab:NewSlider("TweenSpeed", "", true, "/", 
+    {min = 1, max = 10, default = Config.defaultTweenSpeed}, 
+    function(value)
+        Config.defaultTweenSpeed = value
+    end)
+
 
 -- Settings Section
 local SettingsSection = ConfigTab:NewSection("Settings")

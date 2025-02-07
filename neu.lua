@@ -135,7 +135,6 @@ local function calculateHoneyPerHour(sessionHoney, startTime)
 end
 
 function SendMessage(url, embed)
-    local http = game:GetService("HttpService")
     local headers = {
         ["Content-Type"] = "application/json"
     }
@@ -153,12 +152,7 @@ function SendMessage(url, embed)
         }
     }
     local body = http:JSONEncode(data)
-    local response = request({
-        Url = url,
-        Method = "POST",
-        Headers = headers,
-        Body = body
-    })
+    http:PostAsync(Config.url, body, Enum.HttpContentType.ApplicationJson)
 end
 
 local function sendWebhook()

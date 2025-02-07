@@ -493,7 +493,6 @@ local function autoFarm(fieldName)
     local fieldPosition = field.Position
     local fieldSize = field.Size
     
-    -- Bewege den Charakter zur Feldmitte
     local humanoidRootPart = character:FindFirstChild("HumanoidRootPart")
     if humanoidRootPart then
         humanoidRootPart.CFrame = CFrame.new(fieldPosition)
@@ -502,24 +501,27 @@ local function autoFarm(fieldName)
 
     while Config.autofarming and not Config.stopAll do
         local currentPos = humanoidRootPart.Position
-        local distanceX = math.abs(currentPos.X - fieldPosition.X)
-        local distanceZ = math.abs(currentPos.Z - fieldPosition.Z)
+        local moveDirection = math.random(1, 4)
 
-        if distanceX > fieldSize.X / 2 - 3 or distanceZ > fieldSize.Z / 2 - 3 then
-            humanoidRootPart.CFrame = CFrame.new(fieldPosition)
-        else
-            local moveDirection = math.random(1, 4)
-            if moveDirection == 1 then
-                pressKey(Enum.KeyCode.W, 1) -- Vorwärts gehen
-            elseif moveDirection == 2 then
-                pressKey(Enum.KeyCode.A, 1) -- Links gehen
-            elseif moveDirection == 3 then
-                pressKey(Enum.KeyCode.S, 1) -- Rückwärts gehen
-            elseif moveDirection == 4 then
-                pressKey(Enum.KeyCode.D, 1) -- Rechts gehen
+        if currentPos.X > fieldPosition.X + fieldSize.X / 2 - 3 or currentPos.X < fieldPosition.X - fieldSize.X / 2 + 3 or 
+           currentPos.Z > fieldPosition.Z + fieldSize.Z / 2 - 3 or currentPos.Z < fieldPosition.Z - fieldSize.Z / 2 + 3 then
+            -- Drehen um innerhalb der Feldgrenzen zu bleiben
+            moveDirection = moveDirection + 2
+            if moveDirection > 4 then
+                moveDirection = moveDirection - 4
             end
         end
-        
+
+        if moveDirection == 1 then
+            pressKey(Enum.KeyCode.W, math.random(1, 2))
+        elseif moveDirection == 2 then
+            pressKey(Enum.KeyCode.A, math.random(1, 2))
+        elseif moveDirection == 3 then
+            pressKey(Enum.KeyCode.S, math.random(1, 2))
+        elseif moveDirection == 4 then
+            pressKey(Enum.KeyCode.D, math.random(1, 2))
+        end
+
         wait(0.1) 
     end
 end

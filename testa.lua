@@ -473,9 +473,9 @@ local function autoCollect()
 end
 
 local function pressKey(key, duration)
-    VirtualInputManager:SendKeyEvent(true, key, false, game) 
-    wait(duration)
-    VirtualInputManager:SendKeyEvent(false, key, false, game) 
+    VirtualInputManager:SendKeyEvent(true, key, false, game) -- Taste drücken
+    wait(duration) -- Halten
+    VirtualInputManager:SendKeyEvent(false, key, false, game) -- Taste loslassen
 end
 
 local function autoFarm(fieldName)
@@ -494,20 +494,33 @@ local function autoFarm(fieldName)
     local fieldSize = field.Size
 
     print("Fliege zu Feld: " .. fieldName)
-    safeMove(character, fieldPosition, false) 
+    safeMove(character, fieldPosition, false) -- Fliegt in die Mitte des Feldes
 
-    wait(1) 
+    wait(1) -- Kurze Pause nach der Ankunft
 
+    -- Bewege dich realistisch innerhalb des Feldes
     while Config.autofarming and not Config.stopAll do
-        local randomX = math.random(-fieldSize.X/2, fieldSize.X/2)
-        local randomZ = math.random(-fieldSize.Z/2, fieldSize.Z/2)
+        local randomX = math.random(-fieldSize.X/2 + 5, fieldSize.X/2 - 5) -- Bleibt in Grenzen
+        local randomZ = math.random(-fieldSize.Z/2 + 5, fieldSize.Z/2 - 5) -- Bleibt in Grenzen
         local newPosition = fieldPosition + Vector3.new(randomX, 0, randomZ)
 
-        local moveDuration = math.random(2, 5) -- Zufällige Laufzeit
+        -- Sicherstellen, dass die Position im Feld bleibt
+        local humanoidRootPart = character:FindFirstChild("HumanoidRootPart")
+        if humanoidRootPart then
+            local currentPos = humanoidRootPart.Position
+            local distance = (newPosition - currentPos).Magnitude
 
-        pressKey(Enum.KeyCode.W, moveDuration) 
+            if distance > math.min(fieldSize.X, fieldSize.Z) / 2 then
+                print("Zu weit gelaufen, zurück zur Mitte!")
+                safeMove(character, fieldPosition, false) -- Zurück in die Mitte setzen
+            else
+                local moveDuration = math.random(2, 5) -- Zufällige Laufzeit
+                print("Laufe zu neuer Position innerhalb des Feldes...")
+                pressKey(Enum.KeyCode.W, moveDuration) -- Fake W drücken zum Laufen
+            end
+        end
 
-        wait(math.random(1, 3)) 
+        wait(math.random(1, 3)) -- Zufällige Pause für natürliches Verhalten
     end
 end
 

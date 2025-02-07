@@ -137,8 +137,8 @@ end
 local function sendWebhook()
     if not Config.enabled then return end
     
-    local httpService = game:GetService("HttpService")
-    
+    local http = request or syn.request  -- Unterstützt verschiedene Executors
+
     local currentStats = getStats()
     if not currentStats.honey then 
         if Config.debugmode then
@@ -196,29 +196,25 @@ local function sendWebhook()
         }}
     }
 
-    local jsonData = httpService:JSONEncode(data)
-
-    local headers = {
-        ["Content-Type"] = "application/json"
-    }
+    local jsonData = game:GetService("HttpService"):JSONEncode(data)
 
     local requestData = {
         Url = Config.url,
         Method = "POST",
-        Headers = headers,
+        Headers = { ["Content-Type"] = "application/json" },
         Body = jsonData
     }
 
-    local success, err = pcall(function()
-        httpService:PostAsync(Config.url, jsonData, Enum.HttpContentType.ApplicationJson)
+    local success, response = pcall(function()
+        return http(requestData)
     end)
-    
-    if success then
+
+    if success and response.StatusCode == 200 then
         if Config.debugmode then
             print("[✅] Webhook sent successfully!")
         end
     else
-        warn("[❌] Failed to send webhook: " .. tostring(err))
+        warn("[❌] Failed to send webhook: " .. tostring(response and response.StatusMessage or "Unknown error"))
     end
 end
 

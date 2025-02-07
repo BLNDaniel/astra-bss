@@ -510,19 +510,37 @@ local function autoFarm(fieldName)
             local currentPos = humanoidRootPart.Position
             local distance = (newPosition - currentPos).Magnitude
 
-            if distance > math.min(fieldSize.X, fieldSize.Z) / 2 then
+            -- Überprüfen, ob der Charakter zu nah an einer Grenze ist und die Richtung ändern
+            local nearEdge = false
+            if math.abs(currentPos.X - fieldPosition.X) > fieldSize.X/2 - 3 or 
+               math.abs(currentPos.Z - fieldPosition.Z) > fieldSize.Z/2 - 3 then
+                nearEdge = true
+            end
+
+            -- Wenn der Charakter sich zu nah am Rand befindet, dann drehe die Richtung
+            if nearEdge then
+                print("Zu nah am Rand, drehe in eine andere Richtung!")
+                randomX = math.random(-fieldSize.X/2 + 5, fieldSize.X/2 - 5)
+                randomZ = math.random(-fieldSize.Z/2 + 5, fieldSize.Z/2 - 5)
+                newPosition = fieldPosition + Vector3.new(randomX, 0, randomZ)
+            end
+
+            -- Berechne die neue Position und bewege den Charakter
+            local distanceToNewPosition = (newPosition - currentPos).Magnitude
+
+            if distanceToNewPosition > math.min(fieldSize.X, fieldSize.Z) / 2 then
                 print("Zu weit gelaufen, zurück zur Mitte!")
                 safeMove(character, fieldPosition, false) -- Zurück zur Mitte setzen
             else
-                -- Bewege dich in die Richtung der neuen Position mit einer kontinuierlichen Tasteninteraktion
-                local moveDuration = math.random(2, 5)  -- Dauer für die Bewegung
+                -- Bewege den Charakter in die neue Richtung für eine kurze Zeit
+                local moveDuration = math.random(1, 2)  -- Kürzere Dauer für flüssigere Bewegung
                 print("Laufe zu neuer Position innerhalb des Feldes...")
                 
                 -- Entweder W-Taste oder eine andere Taste für Bewegungsrichtung nutzen
                 pressKey(Enum.KeyCode.W, moveDuration)  -- Simuliere das Drücken der Taste
 
                 -- Kurze Pause nach der Bewegung
-                wait(math.random(1, 2))
+                wait(math.random(0.5, 1.5))  -- Kürzere Pause für mehr natürliche Bewegung
                 
                 -- Möglichkeit zur Änderung der Bewegung (z.B. "A" oder "D" für seitliche Bewegung)
                 local direction = math.random(1, 3)  -- 1: W, 2: A, 3: D
@@ -537,9 +555,10 @@ local function autoFarm(fieldName)
         end
 
         -- Zufällige Pausen für ein natürliches Verhalten
-        wait(math.random(3, 7))  -- Längere Pause für weniger auffälliges Verhalten
+        wait(math.random(3, 5))  -- Längere Pause für weniger auffälliges Verhalten
     end
 end
+
 
 -- Farming Tab
 local FarmingTab = Init:NewTab("Farming")

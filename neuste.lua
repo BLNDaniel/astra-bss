@@ -492,35 +492,38 @@ local function autoFarm(fieldName)
     local field = fieldData[fieldName]
     local fieldPosition = field.Position
     local fieldSize = field.Size
-    safeMove(character, fieldPosition, false) 
-
-    wait(1) 
+    
+    -- Bewege den Charakter zur Feldmitte
+    local humanoidRootPart = character:FindFirstChild("HumanoidRootPart")
+    if humanoidRootPart then
+        humanoidRootPart.CFrame = CFrame.new(fieldPosition)
+        wait(1)
+    end
 
     while Config.autofarming and not Config.stopAll do
-        local humanoidRootPart = character:FindFirstChild("HumanoidRootPart")
-        if humanoidRootPart then
-            local currentPos = humanoidRootPart.Position
-            local distanceX = math.abs(currentPos.X - fieldPosition.X)
-            local distanceZ = math.abs(currentPos.Z - fieldPosition.Z)
+        local currentPos = humanoidRootPart.Position
+        local distanceX = math.abs(currentPos.X - fieldPosition.X)
+        local distanceZ = math.abs(currentPos.Z - fieldPosition.Z)
 
-            if distanceX > fieldSize.X / 2 - 3 or distanceZ > fieldSize.Z / 2 - 3 then
-                safeMove(character, fieldPosition, false) 
-            else
-                local moveDirection = math.random(1, 4)
-                if moveDirection == 1 then
-                    pressKey(Enum.KeyCode.W, math.random(0.5))  
-                elseif moveDirection == 2 then
-                    pressKey(Enum.KeyCode.A, math.random(0.5))  
-                elseif moveDirection == 3 then
-                    pressKey(Enum.KeyCode.S, math.random(0.5)) 
-                elseif moveDirection == 4 then
-                    pressKey(Enum.KeyCode.D, math.random(0.5)) 
-                end
+        if distanceX > fieldSize.X / 2 - 3 or distanceZ > fieldSize.Z / 2 - 3 then
+            humanoidRootPart.CFrame = CFrame.new(fieldPosition)
+        else
+            local moveDirection = math.random(1, 4)
+            if moveDirection == 1 then
+                pressKey(Enum.KeyCode.W, 1) -- Vorwärts gehen
+            elseif moveDirection == 2 then
+                pressKey(Enum.KeyCode.A, 1) -- Links gehen
+            elseif moveDirection == 3 then
+                pressKey(Enum.KeyCode.S, 1) -- Rückwärts gehen
+            elseif moveDirection == 4 then
+                pressKey(Enum.KeyCode.D, 1) -- Rechts gehen
             end
         end
+        
         wait(0.1) 
     end
 end
+
 
 -- Farming Tab
 local FarmingTab = Init:NewTab("Farming")

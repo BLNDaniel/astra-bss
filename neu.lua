@@ -36,6 +36,25 @@ local Config = {
     }
 }
 
+local fieldPositions = {
+    PineTreeForest = Vector3.new(-328.67, 65.5, -187.35), -- Füge hier die Koordinaten ein
+    SunflowerField = Vector3.new(-208.951294, 1.5, 176.579224), 
+    CloverField = Vector3.new(), 
+    BlueFlowerField = Vector3.new(), 
+    MushroomField = Vector3.new(), 
+    StrawberryField = Vector3.new(), 
+    BambooField = Vector3.new(), 
+    SpiderField = Vector3.new(), 
+    CactusField = Vector3.new(), 
+    PumpkinPatch = Vector3.new(), 
+    RoseField = Vector3.new(), 
+    PineapplePatch = Vector3.new(), 
+    StumpField = Vector3.new(), 
+    CoconutField = Vector3.new(), 
+    PepperPatch = Vector3.new(), 
+    MountainTopField = Vector3.new()
+}
+
 local hives = {
     {Name = "Hive 6", Position = Vector3.new(-186.31, 6.38, 330.88)},
     {Name = "Hive 5", Position = Vector3.new(-149.32, 6.38, 331.58)},
@@ -137,8 +156,7 @@ end
 local function sendWebhook()
     if not Config.enabled then return end
     
-    local http = request or syn.request  -- Unterstützt verschiedene Executors
-
+    local http = request or syn.request  
     local currentStats = getStats()
     if not currentStats.honey then 
         if Config.debugmode then

@@ -500,62 +500,37 @@ local function autoFarm(fieldName)
 
     -- Bewege dich realistisch innerhalb des Feldes
     while Config.autofarming and not Config.stopAll do
-        local randomX = math.random(-fieldSize.X/2 + 5, fieldSize.X/2 - 5) -- Bleibt in Grenzen
-        local randomZ = math.random(-fieldSize.Z/2 + 5, fieldSize.Z/2 - 5) -- Bleibt in Grenzen
-        local newPosition = fieldPosition + Vector3.new(randomX, 0, randomZ)
-
-        -- Sicherstellen, dass die Position im Feld bleibt
         local humanoidRootPart = character:FindFirstChild("HumanoidRootPart")
         if humanoidRootPart then
             local currentPos = humanoidRootPart.Position
-            local distance = (newPosition - currentPos).Magnitude
+            local distanceX = math.abs(currentPos.X - fieldPosition.X)
+            local distanceZ = math.abs(currentPos.Z - fieldPosition.Z)
 
-            -- Überprüfen, ob der Charakter zu nah an einer Grenze ist und die Richtung ändern
-            local nearEdge = false
-            if math.abs(currentPos.X - fieldPosition.X) > fieldSize.X/2 - 3 or 
-               math.abs(currentPos.Z - fieldPosition.Z) > fieldSize.Z/2 - 3 then
-                nearEdge = true
-            end
-
-            -- Wenn der Charakter sich zu nah am Rand befindet, dann drehe die Richtung
-            if nearEdge then
-                print("Zu nah am Rand, drehe in eine andere Richtung!")
-                randomX = math.random(-fieldSize.X/2 + 5, fieldSize.X/2 - 5)
-                randomZ = math.random(-fieldSize.Z/2 + 5, fieldSize.Z/2 - 5)
-                newPosition = fieldPosition + Vector3.new(randomX, 0, randomZ)
-            end
-
-            -- Berechne die neue Position und bewege den Charakter
-            local distanceToNewPosition = (newPosition - currentPos).Magnitude
-
-            if distanceToNewPosition > math.min(fieldSize.X, fieldSize.Z) / 2 then
-                print("Zu weit gelaufen, zurück zur Mitte!")
-                safeMove(character, fieldPosition, false) -- Zurück zur Mitte setzen
+            -- Wenn der Charakter zu nah an der Grenze ist, zurück zur Mitte
+            if distanceX > fieldSize.X / 2 - 3 or distanceZ > fieldSize.Z / 2 - 3 then
+                print("Zu nah am Rand! Zurück zur Mitte!")
+                safeMove(character, fieldPosition, false) -- Zurück zur Mitte des Feldes
             else
-                -- Bewege den Charakter in die neue Richtung für eine kurze Zeit
-                local moveDuration = math.random(1, 2)  -- Kürzere Dauer für flüssigere Bewegung
-                print("Laufe zu neuer Position innerhalb des Feldes...")
-                
-                -- Entweder W-Taste oder eine andere Taste für Bewegungsrichtung nutzen
-                pressKey(Enum.KeyCode.W, moveDuration)  -- Simuliere das Drücken der Taste
-
-                -- Kurze Pause nach der Bewegung
-                wait(math.random(0.5, 1.5))  -- Kürzere Pause für mehr natürliche Bewegung
-                
-                -- Möglichkeit zur Änderung der Bewegung (z.B. "A" oder "D" für seitliche Bewegung)
-                local direction = math.random(1, 3)  -- 1: W, 2: A, 3: D
-                if direction == 1 then
-                    pressKey(Enum.KeyCode.W, moveDuration)
-                elseif direction == 2 then
-                    pressKey(Enum.KeyCode.A, moveDuration)
-                elseif direction == 3 then
-                    pressKey(Enum.KeyCode.D, moveDuration)
+                -- Zufällige Richtung wählen (W, A, S, D)
+                local moveDirection = math.random(1, 4)
+                if moveDirection == 1 then
+                    print("Bewege Richtung: W")
+                    pressKey(Enum.KeyCode.W, math.random(1, 2))  -- W drücken für 1-2 Sekunden
+                elseif moveDirection == 2 then
+                    print("Bewege Richtung: A")
+                    pressKey(Enum.KeyCode.A, math.random(1, 2))  -- A drücken für 1-2 Sekunden
+                elseif moveDirection == 3 then
+                    print("Bewege Richtung: S")
+                    pressKey(Enum.KeyCode.S, math.random(1, 2))  -- S drücken für 1-2 Sekunden
+                elseif moveDirection == 4 then
+                    print("Bewege Richtung: D")
+                    pressKey(Enum.KeyCode.D, math.random(1, 2))  -- D drücken für 1-2 Sekunden
                 end
             end
         end
 
-        -- Zufällige Pausen für ein natürliches Verhalten
-        wait(math.random(3, 5))  -- Längere Pause für weniger auffälliges Verhalten
+        -- Minimale Pausen zwischen Bewegungen, um die Bewegung flüssig zu machen
+        wait(0.1)  -- Sehr kurze Pause zwischen den Bewegungen
     end
 end
 

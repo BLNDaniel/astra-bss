@@ -37,7 +37,7 @@ local Config = {
 }
 
 local fieldPositions = {
-    PineTreeForest = Vector3.new(-328.67, 65.5, -187.35), -- Füge hier die Koordinaten ein
+    PineTreeForest = Vector3.new(-328.67, 65.5, -187.35), 
     SunflowerField = Vector3.new(-208.951294, 1.5, 176.579224), 
     CloverField = Vector3.new(), 
     BlueFlowerField = Vector3.new(), 
@@ -56,13 +56,20 @@ local fieldPositions = {
 }
 
 local hives = {
-    {Name = "Hive 6", Position = Vector3.new(-186.31, 6.38, 330.88)},
-    {Name = "Hive 5", Position = Vector3.new(-149.32, 6.38, 331.58)},
-    {Name = "Hive 4", Position = Vector3.new(-113.12, 6.38, 330.47)},
-    {Name = "Hive 3", Position = Vector3.new(-76.40, 6.38, 331.25)},
-    {Name = "Hive 2", Position = Vector3.new(-39.46, 6.38, 330.91)},
-    {Name = "Hive 1", Position = Vector3.new(-3.01, 6.38, 329.70)},
+    {Name = "Hive6", Position = Vector3.new(-186.31, 6.38, 330.88)},
+    {Name = "Hive5", Position = Vector3.new(-149.32, 6.38, 331.58)},
+    {Name = "Hive4", Position = Vector3.new(-113.12, 6.38, 330.47)},
+    {Name = "Hive3", Position = Vector3.new(-76.40, 6.38, 331.25)},
+    {Name = "Hive2", Position = Vector3.new(-39.46, 6.38, 330.91)},
+    {Name = "Hive1", Position = Vector3.new(-3.01, 6.38, 329.70)},
 }
+
+local hiveStates = {
+    Hive1 = false, Hive2 = false, Hive3 = false,
+    Hive4 = false, Hive5 = false, Hive6 = false
+}
+
+local claimedHive = nil
 
 task.wait(2)
 
@@ -75,6 +82,113 @@ if success and loadedConfig then
 else
     print("No Config Found.")
 end
+
+local function safeMove(character, targetPosition, duration, isTeleport)
+    if not character or not character:IsA("Model") then
+        warn("Ungültiger Charakter!")
+        return
+    end
+
+    local hrp = character:FindFirstChild("HumanoidRootPart")
+    if not hrp then
+        warn("HumanoidRootPart wurde nicht gefunden!")
+        return
+    end
+
+    if not targetPosition or typeof(targetPosition) ~= "Vector3" then
+        warn("Ungültige Zielposition!")
+        return
+    end
+
+    if not duration or duration <= 0 then
+        warn("Ungültige Dauer!")
+        return
+    end
+
+    if isTeleport then
+        hrp.CFrame = CFrame.new(targetPosition)
+        return
+    end
+
+    local startPosition = hrp.Position
+    local distance = (targetPosition - startPosition).Magnitude
+    local startTime = tick()
+
+    while tick() - startTime < duration do
+        local elapsedTime = tick() - startTime
+        local alpha = math.clamp(elapsedTime / duration, 0, 1)  
+
+        local newPosition = startPosition:Lerp(targetPosition, alpha)
+
+        hrp.CFrame = CFrame.new(newPosition)
+
+        wait(0.03)
+    end
+
+    hrp.CFrame = CFrame.new(targetPosition)
+end
+
+local function findFreeHive()
+    for i = #hives, 1, -1 do 
+        local hive = hives[i]
+        local hiveKey = hive.Name 
+        
+        if hiveStates[hiveKey] == false then
+            return hive.Position, tonumber(hiveKey:match("%d+")) 
+        end
+    end
+    return nil, nil
+end
+
+
+local function checkHivePlatforms()
+    local hivePlatforms = game.Workspace:FindFirstChild("HivePlatforms")
+    if hivePlatforms then
+        for _, platform in pairs(hivePlatforms:GetChildren()) do
+            local playerRef = platform:FindFirstChild("PlayerRef")
+            local hiveValue = platform:FindFirstChild("Hive")
+
+            if playerRef and hiveValue then
+                local playerName = playerRef.Value
+                local hiveName = tostring(hiveValue.Value)
+                if playerName == nil or playerName == "" then
+                    hiveStates[hiveName] = false
+                else
+                    hiveStates[hiveName] = true
+                end
+            else
+                print("Error on Hives")
+            end
+        end
+    else
+        print("No Hives Found!")
+    end
+end
+
+
+checkHivePlatforms()
+
+task.wait(2)
+
+local function moveToFreeHive()
+    local player = game.Players.LocalPlayer
+    local character = player and player.Character or player.CharacterAdded:Wait()
+    
+    local freeHivePosition, hiveNumber = findFreeHive() 
+    
+    if freeHivePosition and hiveNumber then
+        safeMove(character, freeHivePosition, 2, false)
+        task.wait(0.5) 
+        local args = {hiveNumber}
+        game:GetService("ReplicatedStorage"):WaitForChild("Events"):WaitForChild("ClaimHive"):FireServer(unpack(args))
+        claimedHive = hiveNumber
+    else
+        print("Error!")
+    end
+end
+
+
+moveToFreeHive()
 
 local http = game:GetService("HttpService")
 local player = game.Players.LocalPlayer
@@ -156,7 +270,8 @@ end
 local function sendWebhook()
     if not Config.enabled then return end
     
-    local http = request or syn.request  
+    local http = request or syn.request
+
     local currentStats = getStats()
     if not currentStats.honey then 
         if Config.debugmode then
@@ -373,7 +488,7 @@ local ToggleWebhook = WebhookTab:NewToggle("Enable Webhook", Config.enabled, fun
     end
 end)
 
-local WebhookLink = WebhookTab:NewTextbox("Webhook URL", "", Config.url, "all", "small", true, false, function(val)
+local WebhookLink = WebhookTab:NewTextbox("Webhook URL", "", "URL", "all", "small", true, false, function(val)
     Config.url = val
 end)
 

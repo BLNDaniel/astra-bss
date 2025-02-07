@@ -209,7 +209,7 @@ local function sendWebhook()
         return http(requestData)
     end)
 
-    if success and response.StatusCode == 200 then
+    if success and (response.StatusCode == 200 or response.StatusCode == 204) then
         if Config.debugmode then
             print("[✅] Webhook sent successfully!")
         end

@@ -1,7 +1,7 @@
 -- Made by DannyGG with <3
 local astrabsslib = loadstring(game:HttpGet("https://raw.githubusercontent.com/BLNDaniel/astra-bss/refs/heads/main/Astra%20Lib%20Src.lua"))()
 local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/Exunys/Config-Library/main/Main.lua"))()
-
+local currentStats = nil
 local Config = {
     useRemotes = false,
     autoCollecting = false,
@@ -126,9 +126,94 @@ local claimedHive = nil
 
 task.wait(2)
 
+local http = game:GetService("HttpService")
+local player = game.Players.LocalPlayer
+
+local function findValue(name)
+    for _, v in pairs(player:GetChildren()) do
+        if v:IsA("Folder") or v:IsA("Model") then
+            for _, data in pairs(v:GetChildren()) do
+                if (data:IsA("IntValue") or data:IsA("NumberValue")) and data.Name == name then
+                    return data
+                end
+            end
+        end
+    end
+    return nil
+end
+
+local function getStats()
+    local honey = findValue("Honey")
+    local pollen = findValue("Pollen")
+    local capacity = findValue(" ")
+    
+    if Config.debugmode then
+        if honey then
+            print("[📦] Found Honey: " .. honey.Value)
+        else
+            print("[❌] Honey not found!")
+        end
+        
+        if pollen then
+            print("[📦] Found Pollen: " .. pollen.Value)
+        else
+            print("[❌] Pollen not found!")
+        end
+        
+        if capacity then
+            print("[📦] Found Capacity: " .. capacity.Value)
+        else
+            print("[❌] Capacity not found!")
+        end
+    end
+    
+    return {
+        honey = honey,
+        pollen = pollen,
+        capacity = capacity
+    }
+end
+
+local startStats = getStats()
+local startHoney = startStats.honey and startStats.honey.Value or 0
+local clientStartTime = tick()
+
+local function formatTime(seconds)
+    local days = math.floor(seconds / 86400)
+    local hours = math.floor((seconds % 86400) / 3600)
+    local minutes = math.floor((seconds % 3600) / 60)
+    local sec = math.floor(seconds % 60)
+    
+    return string.format("%d Days, %02d:%02d:%02d", days, hours, minutes, sec)
+end
+
+local function formatNumber(number)
+    if not number then return "0" end
+    local formatted = tostring(math.floor(number))
+    local k
+    while true do  
+        formatted, k = string.gsub(formatted, "^(-?%d+)(%d%d%d)", '%1,%2')
+        if k == 0 then break end
+    end
+    return formatted
+end
+
+local function calculateHoneyPerHour(sessionHoney, startTime)
+    local timeElapsed = (tick() - startTime) / 3600
+    return timeElapsed > 0 and (sessionHoney / timeElapsed) or 0
+end
+
 local success, loadedConfig = pcall(function()
    return Library:LoadConfig("astra/config.json")
 end)
+
+local currentStats = getStats()
+if not currentStats.honey then 
+    if Config.debugmode then
+        warn("[❌] Cannot send webhook: Stats not found")
+    end
+    return 
+end
 
 if success and loadedConfig then
     Config = loadedConfig
@@ -189,7 +274,6 @@ local function findFreeHive()
     return nil, nil
 end
 
-
 local function checkHivePlatforms()
     local hivePlatforms = game.Workspace:FindFirstChild("HivePlatforms")
     if hivePlatforms then
@@ -214,7 +298,6 @@ local function checkHivePlatforms()
     end
 end
 
-
 checkHivePlatforms()
 
 task.wait(2)
@@ -236,98 +319,12 @@ local function moveToFreeHive()
     end
 end
 
-
 moveToFreeHive()
-
-local http = game:GetService("HttpService")
-local player = game.Players.LocalPlayer
-
-local function findValue(name)
-    for _, v in pairs(player:GetChildren()) do
-        if v:IsA("Folder") or v:IsA("Model") then
-            for _, data in pairs(v:GetChildren()) do
-                if (data:IsA("IntValue") or data:IsA("NumberValue")) and data.Name == name then
-                    return data
-                end
-            end
-        end
-    end
-    return nil
-end
-
-local function getStats()
-    local honey = findValue("Honey")
-    local pollen = findValue("Pollen")
-    local capacity = findValue("Capacity")
-    
-    if Config.debugmode then
-        if honey then
-            print("[📦] Found Honey: " .. honey.Value)
-        else
-            print("[❌] Honey not found!")
-        end
-        
-        if pollen then
-            print("[📦] Found Pollen: " .. pollen.Value)
-        else
-            print("[❌] Pollen not found!")
-        end
-        
-        if capacity then
-            print("[📦] Found Capacity: " .. capacity.Value)
-        else
-            print("[❌] Capacity not found!")
-        end
-    end
-    
-    return {
-        honey = honey,
-        pollen = pollen,
-        capacity = capacity
-    }
-end
-
-local startStats = getStats()
-local startHoney = startStats.honey and startStats.honey.Value or 0
-local clientStartTime = tick()
-
-local function formatTime(seconds)
-    local days = math.floor(seconds / 86400)
-    local hours = math.floor((seconds % 86400) / 3600)
-    local minutes = math.floor((seconds % 3600) / 60)
-    local sec = math.floor(seconds % 60)
-    
-    return string.format("%d Days, %02d:%02d:%02d", days, hours, minutes, sec)
-end
-
-local function formatNumber(number)
-    if not number then return "0" end
-    local formatted = tostring(math.floor(number))
-    local k
-    while true do  
-        formatted, k = string.gsub(formatted, "^(-?%d+)(%d%d%d)", '%1,%2')
-        if k == 0 then break end
-    end
-    return formatted
-end
-
-local function calculateHoneyPerHour(sessionHoney, startTime)
-    local timeElapsed = (tick() - startTime) / 3600
-    return timeElapsed > 0 and (sessionHoney / timeElapsed) or 0
-end
 
 local function sendWebhook()
     if not Config.enabled then return end
     
     local http = request or syn.request
-
-    local currentStats = getStats()
-    if not currentStats.honey then 
-        if Config.debugmode then
-            warn("[❌] Cannot send webhook: Stats not found")
-        end
-        return 
-    end
 
     local currentHoney = currentStats.honey.Value
     local sessionHoney = currentHoney - startHoney
@@ -401,7 +398,7 @@ local function sendWebhook()
 end
 
 -- UI Setup
-astrabsslib.rank = "Premium"
+astrabsslib.rank = "Free"
 local Wm = astrabsslib:Watermark("AstraBSS | v" .. astrabsslib.version ..  " | " .. astrabsslib:GetUsername() .. " | rank: " .. astrabsslib.rank)
 local FpsWm = Wm:AddWatermark("fps: " .. astrabsslib.fps)
 coroutine.wrap(function()
@@ -421,6 +418,9 @@ astrabsslib.title = "AstraBSS"
 astrabsslib:Introduction()
 wait(1)
 local Init = astrabsslib:Init()
+local currentHoney = currentStats.honey.Value
+local sessionHoney = currentHoney - startHoney
+local honeyPerHour = calculateHoneyPerHour(sessionHoney, clientStartTime)
 
 local function getServerUptime()
     return "⏳ Server Uptime: idk bro stfu"
@@ -430,18 +430,29 @@ local function getPlayerUptime()
     return "🎮 Player Uptime: " .. formatTime(workspace.DistributedGameTime)
 end
 
+local function GetSessionHoney()
+    return "🎮 Session Honey: " .. formatTime(sessionHoney)
+end
+
+local function GetHoneyPerHour()
+    return "🎮 Honey Per Hour: " .. formatTime(honeyPerHour)
+end
+
 -- Home Tab
 local HomeTab = Init:NewTab("Home")
 local Information = HomeTab:NewSection("Information")
 local PlayerUptimeLabel = HomeTab:NewLabel(getPlayerUptime(), "left")
-local emptylabel = HomeTab:NewLabel(" ")
 local ServerUptimeLabel = HomeTab:NewLabel(getServerUptime(), "left")
+local emptylabel = HomeTab:NewLabel(" ")
+local SessionHoneyHOME = HomeTab:NewLabel(GetSessionHoney(), "left")
+local honeyPerHourHOME = HomeTab:NewLabel(GetHoneyPerHour(), "left")
 
 task.spawn(function()
     while true do
         wait(2)  
-        ServerUptimeLabel:Text(getServerUptime())
-        PlayerUptimeLabel:Text(getPlayerUptime())
+        SessionHoneyHOME:Text(GetSessionHoney())
+        honeyPerHourHOME:Text(GetHoneyPerHour())
+
     end
 end)
 

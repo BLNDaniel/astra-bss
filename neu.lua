@@ -306,7 +306,7 @@ end
 local FarmingTab = Init:NewTab("Farming")
 local FarmingSection = FarmingTab:NewSection("Farming")
 
-local FieldSelector = FarmingTab:NewSelector("Selector 1", "bungie", {"fg", "fge", "fg", "fg"}, function(d)
+local FieldSelector = FarmingTab:NewSelector("What Field Bro ?", "Selected Field", {"Sunflower Field", "Dandelion Field", "Mushroom Field", "Blue Flower Field", "Clover Field", "Strawberry Field", "Spider Field", "Bamboo Field", "Pineapple Patch", "Stump Field", "Cactus Field", "Pumpkin Patch", "Pine Tree Forest", "Rose Field", "Mountain Top Field", "Pepper Patch", "Coconut Field"}, function(d)
     print(d)
 end)
 

@@ -483,6 +483,8 @@ local function autoFarm(fieldName)
 
     local player = game.Players.LocalPlayer
     local character = player and player.Character or player.CharacterAdded:Wait()
+    local humanoid = character:WaitForChild("Humanoid")
+    local userInputService = game:GetService("UserInputService")
     
     if not fieldData[fieldName] then
         warn("Feld nicht gefunden!")
@@ -492,33 +494,68 @@ local function autoFarm(fieldName)
     local field = fieldData[fieldName]
     local fieldPosition = field.Position
     local fieldSize = field.Size
-    
-    -- Bewege den Charakter zur Feldmitte
-    local humanoidRootPart = character:FindFirstChild("HumanoidRootPart")
-    if humanoidRootPart then
-        humanoidRootPart.CFrame = CFrame.new(fieldPosition)
-        wait(1)
+
+    -- Verwende safeMove, um ins Feld zu fliegen
+    safeMove(character, fieldPosition, false)
+    wait(1)
+
+    local moveDirection = Vector3.new(0, 0, 0)
+
+    local function isWithinBounds(position)
+        local minX = fieldPosition.X - fieldSize.X / 2
+        local maxX = fieldPosition.X + fieldSize.X / 2
+        local minZ = fieldPosition.Z - fieldSize.X / 2
+        local maxZ = fieldPosition.Z + fieldSize.Z / 2
+
+        return position.X >= minX and position.X <= maxX and position.Z >= minZ and position.Z <= maxZ
     end
 
-    local direction = 1  -- Startet mit der Bewegung in die positive X-Richtung
-
-    while Config.autofarming and not Config.stopAll do
-        local newX = humanoidRootPart.Position.X + (direction * 5)
-        if newX > fieldPosition.X + fieldSize.X / 2 - 3 or newX < fieldPosition.X - fieldSize.X / 2 + 3 then
-            -- Wenn die Grenze erreicht ist, drehe um
-            direction = -direction
-            newX = humanoidRootPart.Position.X + (direction * 5)
+    local function onKeyPress(input, gameProcessedEvent)
+        if gameProcessedEvent then
+            return
         end
 
-        local newZ = humanoidRootPart.Position.Z + (math.random(-fieldSize.Z / 2 + 3, fieldSize.Z / 2 - 3) / 5)
+        if input.KeyCode == Enum.KeyCode.W then
+            moveDirection = Vector3.new(0, 0, -1)
+        elseif input.KeyCode == Enum.KeyCode.A then
+            moveDirection = Vector3.new(-1, 0, 0)
+        elseif input.KeyCode == Enum.KeyCode.S then
+            moveDirection = Vector3.new(0, 0, 1)
+        elseif input.KeyCode == Enum.KeyCode.D then
+            moveDirection = Vector3.new(1, 0, 0)
+        end
+    end
 
-        local targetPosition = Vector3.new(newX, fieldPosition.Y, newZ)
-        humanoidRootPart.CFrame = CFrame.new(targetPosition)
+    local function onKeyRelease(input, gameProcessedEvent)
+        if gameProcessedEvent then
+            return
+        end
 
-        wait(0.1) 
+        if input.KeyCode == Enum.KeyCode.W or input.KeyCode == Enum.KeyCode.A or input.KeyCode == Enum.KeyCode.S or input.KeyCode == Enum.KeyCode.D then
+            moveDirection = Vector3.new(0, 0, 0)
+        end
+    end
+
+    userInputService.InputBegan:Connect(onKeyPress)
+    userInputService.InputEnded:Connect(onKeyRelease)
+
+    local function onRenderStep()
+        if moveDirection.Magnitude > 0 then
+            local newPosition = character.PrimaryPart.Position + (moveDirection * 0.1 * game:GetService("RunService").RenderStepped:Wait())
+
+            if isWithinBounds(newPosition) then
+                humanoid:Move(newPosition - character.PrimaryPart.Position, true)
+            end
+        end
+    end
+
+    game:GetService("RunService").RenderStepped:Connect(onRenderStep)
+
+    -- Starte den Auto-Farming-Prozess
+    while Config.autofarming and not Config.stopAll do
+        wait(0.1)
     end
 end
-
 
 -- Farming Tab
 local FarmingTab = Init:NewTab("Farming")

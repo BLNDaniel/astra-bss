@@ -512,18 +512,34 @@ local function autoFarm(fieldName)
 
             if distance > math.min(fieldSize.X, fieldSize.Z) / 2 then
                 print("Zu weit gelaufen, zurück zur Mitte!")
-                safeMove(character, fieldPosition, false) -- Zurück in die Mitte setzen
+                safeMove(character, fieldPosition, false) -- Zurück zur Mitte setzen
             else
-                local moveDuration = math.random(2, 5) -- Zufällige Laufzeit
+                -- Bewege dich in die Richtung der neuen Position mit einer kontinuierlichen Tasteninteraktion
+                local moveDuration = math.random(2, 5)  -- Dauer für die Bewegung
                 print("Laufe zu neuer Position innerhalb des Feldes...")
-                pressKey(Enum.KeyCode.W, moveDuration) -- Fake W drücken zum Laufen
+                
+                -- Entweder W-Taste oder eine andere Taste für Bewegungsrichtung nutzen
+                pressKey(Enum.KeyCode.W, moveDuration)  -- Simuliere das Drücken der Taste
+
+                -- Kurze Pause nach der Bewegung
+                wait(math.random(1, 2))
+                
+                -- Möglichkeit zur Änderung der Bewegung (z.B. "A" oder "D" für seitliche Bewegung)
+                local direction = math.random(1, 3)  -- 1: W, 2: A, 3: D
+                if direction == 1 then
+                    pressKey(Enum.KeyCode.W, moveDuration)
+                elseif direction == 2 then
+                    pressKey(Enum.KeyCode.A, moveDuration)
+                elseif direction == 3 then
+                    pressKey(Enum.KeyCode.D, moveDuration)
+                end
             end
         end
 
-        wait(math.random(1, 3)) -- Zufällige Pause für natürliches Verhalten
+        -- Zufällige Pausen für ein natürliches Verhalten
+        wait(math.random(3, 7))  -- Längere Pause für weniger auffälliges Verhalten
     end
 end
-
 
 -- Farming Tab
 local FarmingTab = Init:NewTab("Farming")

@@ -493,34 +493,27 @@ local function autoFarm(fieldName)
     local fieldPosition = field.Position
     local fieldSize = field.Size
     
+    -- Bewege den Charakter zur Feldmitte
     local humanoidRootPart = character:FindFirstChild("HumanoidRootPart")
     if humanoidRootPart then
         humanoidRootPart.CFrame = CFrame.new(fieldPosition)
         wait(1)
     end
 
+    local direction = 1  -- Startet mit der Bewegung in die positive X-Richtung
+
     while Config.autofarming and not Config.stopAll do
-        local currentPos = humanoidRootPart.Position
-        local moveDirection = math.random(1, 4)
-
-        if currentPos.X > fieldPosition.X + fieldSize.X / 2 - 3 or currentPos.X < fieldPosition.X - fieldSize.X / 2 + 3 or 
-           currentPos.Z > fieldPosition.Z + fieldSize.Z / 2 - 3 or currentPos.Z < fieldPosition.Z - fieldSize.Z / 2 + 3 then
-            -- Drehen um innerhalb der Feldgrenzen zu bleiben
-            moveDirection = moveDirection + 2
-            if moveDirection > 4 then
-                moveDirection = moveDirection - 4
-            end
+        local newX = humanoidRootPart.Position.X + (direction * 5)
+        if newX > fieldPosition.X + fieldSize.X / 2 - 3 or newX < fieldPosition.X - fieldSize.X / 2 + 3 then
+            -- Wenn die Grenze erreicht ist, drehe um
+            direction = -direction
+            newX = humanoidRootPart.Position.X + (direction * 5)
         end
 
-        if moveDirection == 1 then
-            pressKey(Enum.KeyCode.W, math.random(1, 2))
-        elseif moveDirection == 2 then
-            pressKey(Enum.KeyCode.A, math.random(1, 2))
-        elseif moveDirection == 3 then
-            pressKey(Enum.KeyCode.S, math.random(1, 2))
-        elseif moveDirection == 4 then
-            pressKey(Enum.KeyCode.D, math.random(1, 2))
-        end
+        local newZ = humanoidRootPart.Position.Z + (math.random(-fieldSize.Z / 2 + 3, fieldSize.Z / 2 - 3) / 5)
+
+        local targetPosition = Vector3.new(newX, fieldPosition.Y, newZ)
+        humanoidRootPart.CFrame = CFrame.new(targetPosition)
 
         wait(0.1) 
     end

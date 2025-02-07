@@ -492,11 +492,9 @@ local function autoFarm(fieldName)
     local field = fieldData[fieldName]
     local fieldPosition = field.Position
     local fieldSize = field.Size
+    safeMove(character, fieldPosition, false) 
 
-    print("Fliege zu Feld: " .. fieldName)
-    safeMove(character, fieldPosition, false) -- Fliegt in die Mitte des Feldes
-
-    wait(1) -- Kurze Pause nach der Ankunft
+    wait(1) 
 
     while Config.autofarming and not Config.stopAll do
         local humanoidRootPart = character:FindFirstChild("HumanoidRootPart")
@@ -506,29 +504,23 @@ local function autoFarm(fieldName)
             local distanceZ = math.abs(currentPos.Z - fieldPosition.Z)
 
             if distanceX > fieldSize.X / 2 - 3 or distanceZ > fieldSize.Z / 2 - 3 then
-                print("Zu nah am Rand! Zurück zur Mitte!")
                 safeMove(character, fieldPosition, false) 
             else
                 local moveDirection = math.random(1, 4)
                 if moveDirection == 1 then
-                    print("Bewege Richtung: W")
-                    pressKey(Enum.KeyCode.W, math.random(1))  
+                    pressKey(Enum.KeyCode.W, math.random(0.5))  
                 elseif moveDirection == 2 then
-                    print("Bewege Richtung: A")
-                    pressKey(Enum.KeyCode.A, math.random(1))  
+                    pressKey(Enum.KeyCode.A, math.random(0.5))  
                 elseif moveDirection == 3 then
-                    print("Bewege Richtung: S")
-                    pressKey(Enum.KeyCode.S, math.random(1)) 
+                    pressKey(Enum.KeyCode.S, math.random(0.5)) 
                 elseif moveDirection == 4 then
-                    print("Bewege Richtung: D")
-                    pressKey(Enum.KeyCode.D, math.random(1)) 
+                    pressKey(Enum.KeyCode.D, math.random(0.5)) 
                 end
             end
         end
         wait(0.1) 
     end
 end
-
 
 -- Farming Tab
 local FarmingTab = Init:NewTab("Farming")

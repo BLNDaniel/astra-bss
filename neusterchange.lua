@@ -498,7 +498,6 @@ local function autoFarm(fieldName)
 
     wait(1) -- Kurze Pause nach der Ankunft
 
-    -- Bewege dich realistisch innerhalb des Feldes
     while Config.autofarming and not Config.stopAll do
         local humanoidRootPart = character:FindFirstChild("HumanoidRootPart")
         if humanoidRootPart then
@@ -506,31 +505,27 @@ local function autoFarm(fieldName)
             local distanceX = math.abs(currentPos.X - fieldPosition.X)
             local distanceZ = math.abs(currentPos.Z - fieldPosition.Z)
 
-            -- Wenn der Charakter zu nah an der Grenze ist, zurück zur Mitte
             if distanceX > fieldSize.X / 2 - 3 or distanceZ > fieldSize.Z / 2 - 3 then
                 print("Zu nah am Rand! Zurück zur Mitte!")
-                safeMove(character, fieldPosition, false) -- Zurück zur Mitte des Feldes
+                safeMove(character, fieldPosition, false) 
             else
-                -- Zufällige Richtung wählen (W, A, S, D)
                 local moveDirection = math.random(1, 4)
                 if moveDirection == 1 then
                     print("Bewege Richtung: W")
-                    pressKey(Enum.KeyCode.W, math.random(1, 2))  -- W drücken für 1-2 Sekunden
+                    pressKey(Enum.KeyCode.W, math.random(1))  
                 elseif moveDirection == 2 then
                     print("Bewege Richtung: A")
-                    pressKey(Enum.KeyCode.A, math.random(1, 2))  -- A drücken für 1-2 Sekunden
+                    pressKey(Enum.KeyCode.A, math.random(1))  
                 elseif moveDirection == 3 then
                     print("Bewege Richtung: S")
-                    pressKey(Enum.KeyCode.S, math.random(1, 2))  -- S drücken für 1-2 Sekunden
+                    pressKey(Enum.KeyCode.S, math.random(1)) 
                 elseif moveDirection == 4 then
                     print("Bewege Richtung: D")
-                    pressKey(Enum.KeyCode.D, math.random(1, 2))  -- D drücken für 1-2 Sekunden
+                    pressKey(Enum.KeyCode.D, math.random(1)) 
                 end
             end
         end
-
-        -- Minimale Pausen zwischen Bewegungen, um die Bewegung flüssig zu machen
-        wait(0.1)  -- Sehr kurze Pause zwischen den Bewegungen
+        wait(0.1) 
     end
 end
 

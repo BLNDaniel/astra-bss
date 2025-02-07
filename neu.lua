@@ -306,6 +306,10 @@ end
 local FarmingTab = Init:NewTab("Farming")
 local FarmingSection = FarmingTab:NewSection("Farming")
 
+local FieldSelector = FarmingTab:NewSelector("Selector 1", "bungie", {"fg", "fge", "fg", "fg"}, function(d)
+    print(d)
+end)
+
 local ToggleAutoFarm = FarmingTab:NewToggle("Autofarm", Config.autofarming, function(value)
     Config.autofarming = value
     if Config.debugmode then

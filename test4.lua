@@ -8,7 +8,7 @@ local Config = {
     stopAll = false,
     walkspeedEnabled = false,
     defaultWalkspeed = 60,
-    defaultTweenSpeed = 6,
+    defaultTweenSpeed = 3,
     debugmode = false,
     autofarming = false,
     anonymousmode = false,
@@ -472,6 +472,12 @@ local function autoCollect()
     end
 end
 
+local function pressKey(key, duration)
+    VirtualInputManager:SendKeyEvent(true, key, false, game) 
+    wait(duration)
+    VirtualInputManager:SendKeyEvent(false, key, false, game) 
+end
+
 local function autoFarm(fieldName)
     if not Config.autofarming then return end  
 
@@ -490,17 +496,21 @@ local function autoFarm(fieldName)
     print("Fliege zu Feld: " .. fieldName)
     safeMove(character, fieldPosition, false) 
 
-    wait(1)
+    wait(1) 
 
     while Config.autofarming and not Config.stopAll do
         local randomX = math.random(-fieldSize.X/2, fieldSize.X/2)
         local randomZ = math.random(-fieldSize.Z/2, fieldSize.Z/2)
         local newPosition = fieldPosition + Vector3.new(randomX, 0, randomZ)
 
-        safeMove(character, newPosition, false) 
+        local moveDuration = math.random(2, 5) -- Zufällige Laufzeit
+
+        pressKey(Enum.KeyCode.W, moveDuration) 
+
         wait(math.random(1, 3)) 
     end
 end
+
 
 -- Farming Tab
 local FarmingTab = Init:NewTab("Farming")
